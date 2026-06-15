@@ -1,0 +1,17 @@
+{
+  "name": "sunset-prediction",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "全国晚霞质量与范围预测系统",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "dependencies": {
+    "better-sqlite3": "^12.10.0",
+    "d3-contour": "^4.0.2",
+    "d3-geo": "^3.1.1",
+    "express": "^4.21.0",
+    "node-cron": "^4.2.1"
+  }
+}

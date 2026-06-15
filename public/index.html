@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>全国晚霞预测 - China Sunset Forecast</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+  <header class="app-header">
+    <div class="header-left">
+      <h1>全国晚霞预测</h1>
+      <span class="subtitle">China Sunset Quality Forecast</span>
+    </div>
+    <div class="header-right">
+      <div class="summary-bar" id="summary-bar"></div>
+      <div class="header-controls">
+        <span class="update-time" id="update-time">加载中...</span>
+        <button class="view-btn" id="btn-national" title="全国城市视图">全国</button>
+        <button class="view-btn view-btn-inactive" id="btn-hangzhou" title="杭州区域晚霞范围">杭州</button>
+        <button class="refresh-btn" id="refresh-btn" title="刷新数据">&#x21bb;</button>
+        <div class="view-mode-group" id="view-modes">
+          <button class="view-mode-btn" data-mode="markers">标记</button>
+          <button class="view-mode-btn" data-mode="heatmap">热力</button>
+          <button class="view-mode-btn active" data-mode="contour">区域</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="legend-bar">
+    <span class="legend-title">晚霞指数</span>
+    <div class="legend-item">
+      <span class="legend-dot" style="background:#fff9c4; opacity:0.8"></span>
+      <span>50+ 尚可</span>
+    </div>
+    <div class="legend-item">
+      <span class="legend-dot" style="background:#ff9800"></span>
+      <span>65+ 好</span>
+    </div>
+    <div class="legend-item">
+      <span class="legend-dot" style="background:#ef5350"></span>
+      <span>75+ 很好</span>
+    </div>
+    <div class="legend-item">
+      <span class="legend-dot" style="background:#d32f2f"></span>
+      <span>85+ 优秀</span>
+    </div>
+    <div class="legend-item">
+      <span class="legend-dot" style="background:#880e4f"></span>
+      <span>95+ 极佳</span>
+    </div>
+    <div class="legend-gradient">
+      <div class="gradient-strip"></div>
+      <span class="gradient-label-left">0</span>
+      <span class="gradient-label-right">100</span>
+    </div>
+  </div>
+
+  <main class="app-body">
+    <div id="map"></div>
+    <aside id="detail-panel" class="detail-panel">
+      <button class="panel-close" id="panel-close">&times;</button>
+      <div id="panel-content"></div>
+    </aside>
+  </main>
+
+  <div class="loading-overlay" id="loading">
+    <div class="loading-spinner"></div>
+    <p>正在获取全国气象数据...</p>
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/leaflet.heat@0.2.0/dist/leaflet-heat.js"></script>
+  <script type="module" src="/js/app.js"></script>
+</body>
+</html>
