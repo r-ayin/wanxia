@@ -1,3 +1,14 @@
+import { readFileSync } from 'fs'
+const envLines = readFileSync(new URL('.env', import.meta.url), 'utf8')
+  .split('\n').filter(l => l.trim() && !l.trim().startsWith('#'))
+const env = Object.fromEntries(
+  envLines.map(l => {
+    const i = l.indexOf('=')
+    return [l.slice(0, i).trim(), l.slice(i + 1).trim()]
+  })
+)
+for (const [k, v] of Object.entries(env)) process.env[k] = v
+
 import express from 'express'
 import { fileURLToPath } from 'url'
 import { dirname, join } from 'path'
@@ -5,7 +16,7 @@ import cron from 'node-cron'
 import routes from './src/routes.js'
 import { initDatabase } from './src/storage.js'
 import { restoreWeights, runDailyCalibration, fetchActualWeather } from './src/calibration.js'
-import { fetchAndStoreSocialData, hasCookie, SOCIAL_CITY_IDS } from './src/social-scraper.js'
+import { fetchAndStoreSocialData, hasCookie, hasXiaohongshuCookie, closeBrowser, SOCIAL_CITY_IDS } from './src/social-scraper.js'
 import { runSocialCalibration } from './src/social-calibration.js'
 import { cities } from './src/cities.js'
 
@@ -19,10 +30,10 @@ restoreWeights()
 app.use(express.static(join(__dirname, 'public')))
 app.use('/api', routes)
 
-// 22:00 CST — fetch today's social data for cities with enough Weibo activity
+// 22:00 CST — fetch today's social data for cities with enough social media activity
 cron.schedule('0 22 * * *', async () => {
-  if (!hasCookie()) {
-    console.log('[cron] Skipping social fetch — WEIBO_COOKIE not set')
+  if (!hasCookie() && !hasXiaohongshuCookie()) {
+    console.log('[cron] Skipping social fetch — neither WEIBO_COOKIE nor XIAOHONGSHU_COOKIE set')
     return
   }
   const today = new Date().toISOString().slice(0, 10)
@@ -33,6 +44,8 @@ cron.schedule('0 22 * * *', async () => {
     console.log(`[cron] Social fetch done: ${ok}/${results.length} cities scored`)
   } catch (err) {
     console.error('[cron] Social fetch failed:', err.message)
+  } finally {
+    await closeBrowser()
   }
 }, { timezone: 'Asia/Shanghai' })
 
