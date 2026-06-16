@@ -6,4 +6,9 @@ node_modules/
 
 # 数据库（二进制，不提交）
 *.db
+*.db-wal
+*.db-shm
+
+# 截图输出
+screenshots/
 

@@ -109,6 +109,30 @@ function handleCityClick(city) {
   loadCityHistory(city.id)
 }
 
+// Expose for Playwright screenshot automation
+// Note: `predictions` is set to data.cities (array), NOT the full API response
+window.__wanxia = {
+  getCities: () => predictions,   // already data.cities array
+  getSummary: () => {
+    // summary data is stored in the DOM via updateSummary
+    const bar = document.getElementById('summary-bar')
+    return bar?.textContent?.trim() || ''
+  },
+  openCity: (cityId) => {
+    const city = predictions?.find(c => c.id === cityId)
+    if (city) handleCityClick(city)
+    return !!city
+  },
+  closePanel: () => closePanel(),
+  getTopCities: (n = 5) => {
+    if (!predictions?.length) return []
+    return [...predictions]
+      .filter(c => c.score != null)
+      .sort((a, b) => b.score - a.score)
+      .slice(0, n)
+  },
+}
+
 function setActiveMode(mode) {
   document.querySelectorAll('#view-modes .view-mode-btn').forEach(btn => {
     btn.classList.toggle('active', btn.dataset.mode === mode)
