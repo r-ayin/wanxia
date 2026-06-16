@@ -12,3 +12,6 @@ node_modules/
 # 截图输出
 screenshots/
 
+# 发帖素材包
+posts/
+

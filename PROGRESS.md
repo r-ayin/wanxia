@@ -26,14 +26,30 @@
 - [x] 端到端验证通过（杭州 22条笔记，社交得分 100/100）
 
 ## 待办
-- [ ] 小红书发布自动化（图片生成 ✅ → 待整合定时发布）
+- [ ] 小红书定时发布（22:00采集→22:30截图+文案→发布）
 - [ ] Weibo 桌面搜索 cookie 配置（提升微博数据质量）
 - [ ] 微博/小红书权重比例校准
 
-## 新建截图工具
-- `scripts/screenshot-xhs.js` — 利用前端页面 + Playwright 截取全国概览 + TOP N 城市详情
-- 输出到 `screenshots/` 目录，2x Retina 画质，可直接用于小红书发帖
-- 新增 `window.__wanxia` 全局 API（`app.js`），供 Playwright 精确操控面板
+## 新建工具链
+
+| 脚本 | 用途 |
+|------|------|
+| `scripts/screenshot-xhs.js` | 截图：全国概览 + TOP N 城市详情 |
+| `scripts/publish-xhs.js` | 一键发帖素材包：截图 + 文案 + posts.json |
+| `src/copy-generator.js` | 文案引擎：全国播报 + 一线城市独立帖（风格B） |
+
+### 素材包输出 (`posts/`)
+```
+posts/
+├── posts.json          — 索引（标题、截图路径、日期）
+├── 01-national.png     — 全国等高线概览
+├── 01-national.txt     — 全国播报文案
+├── 02-上海.png          — 上海 77分 极佳
+├── 02-上海.txt
+├── 03-杭州.png          — 杭州 71分 好
+...
+└── 10-大连.png          — 大连 87分 极佳
+```
 
 ## 阻塞项
 无
