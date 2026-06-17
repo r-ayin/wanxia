@@ -188,6 +188,47 @@ export function getPredictionHistory(cityId, days = 30) {
   `).all(cityId, `-${days} days`)
 }
 
+export function getPredictionsByDate(date) {
+  const rows = getDb().prepare(`
+    SELECT city_id, city_name, lat, lon, region, score, tier,
+           sub_humidity, sub_high_cloud, sub_pressure, sub_aerosol,
+           sub_vertical_velocity, sub_visibility, dominant_color, sunset_time
+    FROM daily_predictions
+    WHERE date = ?
+  `).all(date)
+
+  if (!rows.length) return null
+
+  return {
+    date,
+    cities: rows.map(r => ({
+      id: r.city_id,
+      name: r.city_name,
+      lat: r.lat,
+      lon: r.lon,
+      region: r.region,
+      score: r.score,
+      tier: r.tier,
+      tierCn: r.tier === 'Great' ? '极佳' : r.tier === 'Good' ? '好' : r.tier === 'Fair' ? '一般' : '翻车',
+      dominantColor: safeJsonParse(r.dominant_color),
+      sunsetTime: r.sunset_time,
+      subScores: {
+        humidity: r.sub_humidity,
+        highCloud: r.sub_high_cloud,
+        pressure: r.sub_pressure,
+        aerosol: r.sub_aerosol,
+        verticalVelocity: r.sub_vertical_velocity,
+        visibility: r.sub_visibility,
+      },
+    })),
+  }
+}
+
+function safeJsonParse(str) {
+  if (!str) return null
+  try { return JSON.parse(str) } catch { return null }
+}
+
 export function getCalibrationPairs(days = 14) {
   return getDb().prepare(`
     SELECT

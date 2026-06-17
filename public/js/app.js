@@ -148,11 +148,13 @@ function stopContourStream() {
 
 function startContourStream() {
   stopContourStream()
+  window.__contourReady = false  // Reset — will be set true on 'complete'
 
   if (contourData) {
     renderContourRegions(contourData.contours, predictions, handleCityClick, contourData.points)
     updateContourSummary(contourData.summary, contourData.pointCount)
     updateTime(contourData)
+    window.__contourReady = true  // Cache hit — contours already rendered
     return
   }
 
@@ -188,6 +190,8 @@ function startContourStream() {
       el.style.color = ''
       el.textContent = `更新于 ${new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })}`
       stopContourStream()
+      // Signal Playwright scripts that contours are fully rendered
+      window.__contourReady = true
     } else if (data.type === 'error') {
       const el = document.getElementById('update-time')
       el.style.color = '#ef4444'

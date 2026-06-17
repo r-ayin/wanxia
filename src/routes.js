@@ -7,7 +7,8 @@ import { fetchGridPredictions, GRID_CONFIGS, buildGrid, chunkArray, fetchBatch }
 import { buildContourGeoJSON } from './contour-builder.js'
 import {
   storeDailyPredictions, storeGridSummary,
-  getPredictionHistory, getAccuracyMetrics, getWeightHistory,
+  getPredictionHistory, getPredictionsByDate,
+  getAccuracyMetrics, getWeightHistory,
   getSocialObservations, getSocialStatus,
 } from './storage.js'
 import { fetchAndStoreSocialData, hasCookie, hasXiaohongshuCookie, cookieStatus, SOCIAL_CITY_IDS } from './social-scraper.js'
@@ -105,6 +106,15 @@ function buildSummary(predictions) {
 
 router.get('/predictions', async (req, res) => {
   try {
+    // 支持历史日期查询（用于日环比文案）
+    const targetDate = req.query.date
+    if (targetDate) {
+      const historical = getPredictionsByDate(targetDate)
+      if (!historical) {
+        return res.status(404).json({ error: '该日期无预测数据', date: targetDate })
+      }
+      return res.json(historical)
+    }
     const data = await getPredictions()
     res.json(data)
   } catch (err) {

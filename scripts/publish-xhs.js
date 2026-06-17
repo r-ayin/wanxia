@@ -39,9 +39,20 @@ async function main() {
   const data = await apiRes.json()
   console.log(`   ✅ ${data.cityCount} 城市，均分 ${data.summary.averageScore}`)
 
+  // Fetch yesterday's data for trend awareness
+  const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10)
+  let yesterdayData = null
+  try {
+    const yRes = await fetch(`${BASE}/api/predictions?date=${yesterday}`)
+    if (yRes.ok) {
+      yesterdayData = await yRes.json()
+      console.log(`   📈 昨日数据已加载（${yesterdayData.cities?.length || 0} 城）`)
+    }
+  } catch { /* yesterday data is optional */ }
+
   // Generate copy
   const { generateAll } = await import('../src/copy-generator.js')
-  const { national, cityPosts } = generateAll(data)
+  const { national, cityPosts } = generateAll(data, yesterdayData)
 
   // Launch browser
   console.log('\n🚀 启动浏览器...')
@@ -64,7 +75,23 @@ async function main() {
       const loading = document.getElementById('loading')
       return bar?.textContent?.trim().length > 5 && loading?.classList.contains('hidden')
     }, { timeout: 60000 })
-    console.log('   ✅ 页面就绪')
+    console.log('   ✅ 数据就绪')
+
+    // Wait for contour SSE stream to complete + Leaflet rendering to settle
+    console.log('   ⏳ 等待等高线渲染完成...')
+    try {
+      await page.waitForFunction(() => window.__contourReady === true, { timeout: 120000 })
+      console.log('   ✅ 等高线渲染完成')
+    } catch {
+      // Fallback: wait for .contour-region elements and extra settle time
+      console.log('   ⚠️  __contourReady 超时，回退到 .contour-region 检测')
+      try {
+        await page.waitForSelector('.contour-region', { timeout: 90000 })
+      } catch {}
+    }
+    // Extra settle time for Leaflet tile rendering
+    await wait(5000)
+    console.log('   ✅ 页面渲染稳定，开始截图')
 
     // ═══ 2. National Screenshot + Copy ════════════════════════════════════════
     console.log('\n── 全国播报 ──')

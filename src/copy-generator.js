@@ -56,23 +56,142 @@ function getSpots(cityName) {
 
 // ── 文案组件 ──────────────────────────────────────────────────────────────────
 
-function colorDescription(hex, name) {
-  const map = {
-    '#DC143C': '层层叠叠的红，烧得比较透的那种',
-    '#FF4500': '偏橙的红，像橘子味晚霞',
-    '#FF8C00': '偏金偏橘，暖色调，比较温柔',
-    '#FA8072': '偏粉的淡红，饱和度不高但舒服',
-    '#FFD700': '金黄色，不会太炸，温柔挂',
-    '#DDA0DD': '淡紫色晚霞，比较少见',
-    '#808080': '今天云况比较复杂，颜色不好判断',
+function colorDescription(hex, name, seed = 0) {
+  // ── 颜色叙事变体库（每色 3 种表达，基于 seed 轮换）──
+  const variants = {
+    '#DC143C': [
+      '层层叠叠的红，烧得比较透的那种',
+      '浓烈的绯红色，像油画颜料泼在天上',
+      '红得很正，不带杂色，今天属于高饱和输出',
+    ],
+    '#FF4500': [
+      '偏橙的红，像橘子味晚霞',
+      '橙红调，不是那种艳红，偏暖偏柔',
+      '火烧云的那种橙红，层次感很丰富',
+    ],
+    '#FF8C00': [
+      '偏金偏橘，暖色调，比较温柔',
+      '橙金色，不像盛夏那么烈，温吞但持久',
+      '落日熔金那种色调，自带滤镜',
+    ],
+    '#FA8072': [
+      '偏粉的淡红，饱和度不高但舒服',
+      '淡粉红，雾蒙蒙的柔光感',
+      '浅浅的鲑鱼粉，不是浓艳挂，清新路线',
+    ],
+    '#FFD700': [
+      '金黄色，不会太炸，温柔挂',
+      '金色调，像被暖光灯打了一层',
+      '偏金，不是那种刺眼的亮，是软软的金',
+    ],
+    '#DDA0DD': [
+      '淡紫色晚霞，比较少见',
+      '紫调，不是常见配色，今天有点特别',
+      '偏紫偏粉，比较罕见的那种天色',
+    ],
+    '#808080': [
+      '今天云况比较复杂，颜色不好判断',
+      '灰色主调，云层比较厚，颜色被压住了',
+      '云多，天色偏灰，但也可能有意外的层次',
+    ],
   }
-  if (map[hex]) return map[hex]
-  if (name.includes('红')) return '红色系晚霞'
-  if (name.includes('橙')) return '橙色调晚霞'
-  if (name.includes('金')) return '金色系晚霞'
-  if (name.includes('紫')) return '紫色调晚霞'
-  if (name.includes('灰')) return '条件一般，不抱太高期待'
+
+  const pool = variants[hex]
+  if (pool) {
+    const idx = Math.abs(seed) % pool.length
+    return pool[idx]
+  }
+
+  // 回退：基于色名
+  if (name.includes('红')) {
+    const reds = ['红色系晚霞', '偏红的调子', '暖红色调']
+    return reds[Math.abs(seed) % reds.length]
+  }
+  if (name.includes('橙')) {
+    const oranges = ['橙色调晚霞', '橘色系', '偏橘偏暖']
+    return oranges[Math.abs(seed) % oranges.length]
+  }
+  if (name.includes('金')) {
+    const golds = ['金色系晚霞', '暖金调', '金黄色泽']
+    return golds[Math.abs(seed) % golds.length]
+  }
+  if (name.includes('紫')) {
+    const purples = ['紫色调晚霞', '偏紫的色调', '紫霞']
+    return purples[Math.abs(seed) % purples.length]
+  }
+  if (name.includes('灰')) {
+    const grays = ['条件一般，不抱太高期待', '灰色调，顺其自然', '云量偏多，颜色被压制']
+    return grays[Math.abs(seed) % grays.length]
+  }
   return '天色值得期待'
+}
+
+// ── 趋势感知：日环比 ─────────────────────────────────────────────────────────
+function trendNarrative(city, yesterdayCity) {
+  if (!yesterdayCity || yesterdayCity.score == null) return ''
+
+  const delta = city.score - yesterdayCity.score
+  const todayTier = city.tierCn || ''
+  const yesterdayTier = yesterdayCity.tierCn || ''
+
+  // 等级跃升
+  if (todayTier === '极佳' && yesterdayTier !== '极佳') {
+    return `比昨天升了一档，今天值得出门。`
+  }
+  // 大幅提升
+  if (delta >= 15) {
+    return `比昨天高了${delta}分，明显好转。`
+  }
+  // 小幅提升
+  if (delta >= 5) {
+    return `比昨天好了一点（+${delta}），可以期待。`
+  }
+  // 连续高位
+  if (city.score >= 80 && yesterdayCity.score >= 80) {
+    return `连续两天高分，最近天气给力。`
+  }
+  // 持平
+  if (Math.abs(delta) < 5) {
+    return `和昨天差不多，保持稳定。`
+  }
+  // 下降但还行
+  if (delta <= -5 && city.score >= 65) {
+    return `比昨天低了${Math.abs(delta)}分，但仍有看头。`
+  }
+  // 大幅下降
+  if (delta <= -15) {
+    return `比昨天降了不少，且看且珍惜。`
+  }
+
+  return ''
+}
+
+// ── 模板轮换：3 种 intro 风格 ──────────────────────────────────────────────────
+function introTemplate(variant, city, score, tier, comment) {
+  const date = new Date()
+  const dayOfMonth = date.getDate()
+
+  // 基于日期 + 城市名字符码和选择模板（同城同日一致，跨城跨日变化）
+  const charSum = [...(city.name || '')].reduce((s, c) => s + c.charCodeAt(0), 0)
+  const seed = dayOfMonth * 31 + charSum
+  const t = seed % 3
+
+  switch (t) {
+    case 0:
+      // 风格A：直接行动号召
+      return `今天${city.name}${comment}。`
+    case 1:
+      // 风格B：感官描述开场
+      if (score >= 75) {
+        return `${city.name}今晚的天空值得抬头看一眼——`
+      }
+      return `${city.name}今晚天色${comment === '随缘出门' ? '一般' : '尚可'}——`
+    case 2:
+      // 风格C：简洁数据开场
+      return `${score}分·${tier || '--'} | ${city.name}`
+    default:
+      return `今天${city.name}${comment}。`
+  }
 }
 
 function scoreEmoji(score) {
@@ -196,7 +315,7 @@ export function generateNationalCopy(data) {
 
 // ── 城市独立播报 ──────────────────────────────────────────────────────────────
 
-export function generateCityCopy(city, date) {
+export function generateCityCopy(city, date, yesterdayCity) {
   const score = city.score || 0
   const tier = city.tierCn || ''
   const color = city.dominantColor || {}
@@ -206,21 +325,34 @@ export function generateCityCopy(city, date) {
   const emoji = scoreEmoji(score)
   const comment = scoreComment(score)
 
+  // 种子：日期+城市名哈希 → 同一城市每天变，不同城市同天不同
+  const seed = (date || '').length + (city.name || '').length + score
+
   // Title: city name + score hook
   const title = `${emoji} ${city.name}晚霞 · ${score}分 ${tier}`
 
-  // Color narrative
-  const colorNarr = colorDescription(color.hex, color.name)
+  // Color narrative with variation
+  const colorNarr = colorDescription(color.hex, color.name, seed)
 
-  // Body
+  // Trend awareness
+  const trend = trendNarrative(city, yesterdayCity)
+
+  // Varied intro
+  const intro = introTemplate(null, city, score, tier, comment)
+
+  // Sub-score narrative
+  const subNarr = subScoreNarrative(subs)
+
+  // Build body with optional trend
   const body = [
-    `今天${city.name}${comment}。`,
+    intro,
     '',
     `${emoji} ${score}分 · ${tier}`,
     `🎨 预测色：${color.name}（${colorNarr}）`,
     `🕐 日落约 ${time}`,
     '',
-    subScoreNarrative(subs) ? `💡 ${subScoreNarrative(subs)}。` : '',
+    subNarr ? `💡 ${subNarr}。` : '',
+    trend ? `📈 ${trend}` : '',
     spots.length ? `📍 推荐蹲点：${spots.slice(0, 3).join('、')}` : '',
   ].filter(Boolean).join('\n')
 
@@ -240,14 +372,19 @@ export const TIER1_CITY_IDS = [
 
 // ── 批量生成 ──────────────────────────────────────────────────────────────────
 
-export function generateAll(data) {
+export function generateAll(data, yesterdayData) {
   const cities = data.cities || []
+  const yesterdayCities = yesterdayData?.cities || []
   const national = generateNationalCopy(data)
 
   const cityPosts = TIER1_CITY_IDS
-    .map(id => cities.find(c => c.id === id))
-    .filter(c => c && c.score != null && c.score >= 50)  // 只发 ≥50 分的城市
-    .map(c => generateCityCopy(c, data.date))
+    .map(id => {
+      const c = cities.find(c => c.id === id)
+      if (!c || c.score == null || c.score < 50) return null  // 只发 ≥50 分的城市
+      const yc = yesterdayCities.find(y => y.id === id)
+      return generateCityCopy(c, data.date, yc)
+    })
+    .filter(Boolean)
 
   return { national, cityPosts }
 }

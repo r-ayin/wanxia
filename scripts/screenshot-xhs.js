@@ -71,13 +71,22 @@ async function main() {
     console.log('   ✅ 预测数据就绪')
 
     // Wait for contour regions (SSE streaming may take a while)
+    console.log('   ⏳ 等待等高线渲染完成...')
     try {
-      await page.waitForSelector('.contour-region', { timeout: 90000 })
-      console.log('   ✅ 等高线渲染完成')
+      await page.waitForFunction(() => window.__contourReady === true, { timeout: 120000 })
+      console.log('   ✅ __contourReady 信号收到')
     } catch {
-      console.log('   ⚠️  等高线超时，使用已有渲染')
+      console.log('   ⚠️  __contourReady 超时，回退到 .contour-region 检测')
+      try {
+        await page.waitForSelector('.contour-region', { timeout: 90000 })
+        console.log('   ✅ .contour-region 检测到')
+      } catch {
+        console.log('   ⚠️  等高线超时，使用已有渲染')
+      }
     }
-    await wait(3000) // settle
+    // Extra settle time for Leaflet tile loading + SVG polygon rendering
+    await wait(5000)
+    console.log('   ✅ 页面渲染稳定')
 
     // Debug: check what's available
     const dbg = await page.evaluate(() => ({

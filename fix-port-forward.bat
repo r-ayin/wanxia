@@ -1,4 +1,5 @@
 @echo off
+chcp 65001 >nul
 REM 设置 WSL→Windows 端口转发（以管理员身份运行）
 REM 用法：右键 → 以管理员身份运行
 
