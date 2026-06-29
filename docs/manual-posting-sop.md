@@ -1,14 +1,51 @@
 # 晚霞预报 · 小红书手动发帖 SOP
 
 > 适用期间：自动发帖停用期（小红书检测 v11 addInitScript Shadow DOM 方案）
-> 管线状态：**素材包自动生成 ✅ → 发帖手动 ⬜**
+> 管线状态：**素材包生成 + 发帖 → 全部手动**
 > 最后更新：2026-06-29
 
 ## 背景
 
-2026-06-20 小红书开始检测 Playwright 自动化脚本（`launch()` + `addInitScript` Shadow DOM 穿透被命中）。自动发帖已关闭，但**内容管线仍在自动运行**——每天 22:30 cron 触发，生成完整素材包到 `posts/YYYY-MM-DD/`。
+2026-06-20 小红书开始检测 Playwright 自动化脚本。自动发帖已关闭。
 
-本文档覆盖从「素材包」到「发布完成」的标准操作流程。
+⚠️ **server.js 中的定时 cron（12:00 自动生成素材包）依赖 `node server.js` 持续运行。** 如果服务器没开机或进程死了，cron 不会触发。截至 2026-06-29，最后一份素材包是 06-22。
+
+本文档覆盖从「启动服务 / 生成素材」到「发布完成」的完整手动流程。
+
+---
+
+## 〇、第一步：获取当天的素材包
+
+**`publish-xhs.js` 需要连接 wanxia 服务（localhost:8080）才能截图**——所以服务必须先跑起来。
+
+### 模式 A：让 cron 自动生成（推荐——设一次就忘）
+
+每天中午 12:00，server.js 的 cron 自动执行 `publish-xhs.js`，生成当日素材包。
+
+```bash
+cd E:\x-tool\wanxia
+start-wanxia.bat          # 或 node server.js
+```
+
+**保持这个终端窗口开着就行。** 每天 12:00 自动在 `posts/YYYY-MM-DD/` 下产出素材包，你只需要在方便的时候来手动发帖。
+
+> 验证 cron 是否在跑：中午 12:05 检查 `ls posts/$(date +%Y-%m-%d)/`，有文件就说明 cron 正常。
+
+### 模式 B：手动触发（适合偶尔发一次）
+
+1. 先启动服务：
+```bash
+cd E:\x-tool\wanxia
+start-wanxia.bat          # 终端 1：启动服务（保持开着）
+```
+
+2. 另开终端，手动生成素材包：
+```bash
+cd E:\x-tool\wanxia
+node scripts/publish-xhs.js   # 终端 2：生成素材包（约 3-5 min）
+```
+
+> ⚠️ `publish-xhs.js` 会启动 Playwright 浏览器连接 `localhost:8080` 截图。如果服务没启动，脚本会卡在「加载前端」步骤超时。
 
 ---
 
@@ -163,13 +200,25 @@ node scripts/publish-xhs.js
 
 ## 六、时间预算
 
+### 模式 A（cron 自动生成素材包）
+
 | 步骤 | 耗时 |
 |------|------|
-| 确认素材包 | 1 min |
+| 确认素材包已生成 | 1 min |
 | 第一篇（全国）发布 | 3 min |
 | 每增加一条城市帖 | 2 min |
 | 发布后验证（全部） | 2 min |
 | **总计（5条）** | **~15 min** |
+
+### 模式 B（手动生成素材包 + 发帖）
+
+| 步骤 | 耗时 |
+|------|------|
+| 启动服务 + 生成素材包 | 5 min |
+| 第一篇（全国）发布 | 3 min |
+| 每增加一条城市帖 | 2 min |
+| 发布后验证（全部） | 2 min |
+| **总计（5条）** | **~20 min** |
 
 ---
 
@@ -177,10 +226,12 @@ node scripts/publish-xhs.js
 
 ```
 📂 素材包位置：wanxia/posts/YYYY-MM-DD/
+🖥️ 先决条件：  start-wanxia.bat 启动服务（必须！）
 📋 索引文件：  posts.json
 🖼️ 封面图：    covers/*.png
 📝 文案：      *.txt
-🔧 手动触发：  node scripts/publish-xhs.js
+🔧 手动生成：  node scripts/publish-xhs.js（需服务已启动）
+🤖 自动生成：  cron 每天 12:00（需服务持续运行）
 📱 发帖平台：  小红书 App（推荐）/ 桌面网页版
 ⏰ 发布间隔：  3-5 min/条
 📊 日均条数：  5-6 条
@@ -188,4 +239,4 @@ node scripts/publish-xhs.js
 
 ---
 
-> **管线每天自动跑，素材包不会缺。你只需要花 15 分钟把素材变成帖子。**
+> **服务开着 → cron 每天 12:00 自动产素材包。你只负责打开 App 发帖，15 分钟搞定。**
