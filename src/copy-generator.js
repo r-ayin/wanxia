@@ -429,7 +429,20 @@ function weatherNarrative(city) {
       parts.push('空气是干爽的，天会特别透——能一眼看到地平线的尽头')
     }
   }
+  // 🔴 v3.1 — 科学加成：好条件的解释
+  if (city.humidity >= 60 && city.humidity <= 85 && city.temp >= 25) {
+    parts.push('湿度温度都在晚霞的舒适区——今天的天时地利都到位了')
+  }
   return parts.join('。')
+}
+
+// ── v3.1 快速播报（一线城市一句话，适合多城汇总帖开头） ────────────────────
+function quickLine(city, score) {
+  const e = scoreEmoji(score)
+  if (score >= 80) return `${e} ${city.name}${score}分 今天属于不用犹豫就出门的那种`
+  if (score >= 65) return `${e} ${city.name}${score}分 有空就去，不亏`
+  if (score >= 50) return `${e} ${city.name}${score}分 随缘，不强求`
+  return `${e} ${city.name}${score}分 今天歇着吧，改天再追`
 }
 
 // ── 诗意感官片段（不依赖分数的自由联想） ──────────────────────────────────
