@@ -20,6 +20,11 @@ scripts/.xhs_storage_state.json
 scripts/.xhs_storage_state.json.bak
 scripts/.xhs_health.json
 
+# Chrome 浏览器 profile（数千缓存文件+登录态，切勿提交）
+scripts/.xhs_chrome_profile/
+scripts/.xhs_visible/
+scripts/.xhs_browser_profile/
+
 # Python
 .venv/
 *.pyc
