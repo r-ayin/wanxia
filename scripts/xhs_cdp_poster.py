@@ -56,7 +56,19 @@ def load_posts(json_path):
     with open(json_path, encoding="utf-8") as f:
         data = json.load(f)
     posts = data if isinstance(data, list) else data.get("posts", [])
-    return [p for p in posts if p.get("title") and p.get("content")]
+    result = []
+    parent = json_path.parent
+    for p in posts:
+        if not p.get("title"):
+            continue
+        # Content may be inline or in a separate copyFile
+        content = p.get("content", "")
+        if not content and p.get("copyFile"):
+            cf = parent / p["copyFile"]
+            if cf.exists():
+                content = cf.read_text(encoding="utf-8")
+        result.append({**p, "content": content})
+    return [p for p in result if p.get("content")]
 
 
 async def connect_via_cdp():
