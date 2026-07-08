@@ -75,39 +75,70 @@ async def connect_via_cdp():
     pw = await async_playwright().start()
     browser = await pw.chromium.connect_over_cdp(CDP_URL)
     print(f"  CDP connected: {CDP_URL}")
-    pages = browser.contexts[0].pages if browser.contexts else []
-    page = pages[0] if pages else await browser.contexts[0].new_page()
-    print(f"  page: {page.url[:60]}")
+    # List all pages, pick the one on creator (not login)
+    all_pages = []
+    for ctx in browser.contexts:
+        for p in ctx.pages:
+            all_pages.append(p)
+            print(f"  tab: {p.url[:80]}")
+    # Find first page on creator (not login)
+    for p in all_pages:
+        if "creator.xiaohongshu.com" in p.url and "login" not in p.url:
+            print(f"  using: {p.url[:60]}")
+            return browser, p
+    # Fallback: use last page
+    page = all_pages[-1] if all_pages else await browser.contexts[0].new_page()
+    print(f"  fallback: {page.url[:60]}")
     return browser, page
 
 
 async def navigate_to_creator(page):
-    if "creator.xiaohongshu.com" not in page.url:
+    current = page.url
+    if "creator.xiaohongshu.com" not in current:
         print("  -> creator studio...")
         await page.goto("https://creator.xiaohongshu.com/", wait_until="domcontentloaded", timeout=30000)
-        await page.wait_for_timeout(2000)
+        await page.wait_for_timeout(3000)
+        # Take diagnostic after navigation
+        DIAG_DIR.mkdir(exist_ok=True)
+        await page.screenshot(path=str(DIAG_DIR / "cdp_nav_creator.png"))
+
+    # Try clicking "发布笔记" button on creator home
+    for btn_text in ["发布笔记", "create", "new"]:
+        try:
+            btn = page.locator(f'text={btn_text}').first
+            if await btn.is_visible(timeout=3000):
+                await btn.click()
+                await page.wait_for_timeout(3000)
+                print(f"  clicked: {btn_text}")
+                break
+        except: continue
+
+    # If still not on publish page, go directly
     if "publish" not in page.url:
-        btn = page.locator("text=发布笔记").first
-        if await btn.is_visible(timeout=3000):
-            await btn.click(); await page.wait_for_timeout(2000)
-            print("  clicked publish")
-        else:
-            await page.goto("https://creator.xiaohongshu.com/publish/publish", wait_until="domcontentloaded", timeout=15000)
-            await page.wait_for_timeout(2000)
+        print("  -> direct publish URL")
+        await page.goto("https://creator.xiaohongshu.com/publish/publish", wait_until="domcontentloaded", timeout=15000)
+        await page.wait_for_timeout(3000)
+
+    print(f"  URL: {page.url[:80]}")
     return "creator.xiaohongshu.com" in page.url
 
 
 async def upload_images(page, paths):
     if not paths: return False
+    # Wait for page to settle
+    await page.wait_for_timeout(2000)
     inp = page.locator('input[type="file"]').first
     try:
-        await inp.wait_for(state="attached", timeout=5000)
+        await inp.wait_for(state="attached", timeout=15000)
         await inp.set_input_files(paths)
         print(f"  uploaded {len(paths)} images")
-        await page.wait_for_timeout(3000)
+        await page.wait_for_timeout(5000)
         return True
     except Exception as e:
-        print(f"  [WARN] upload: {e}"); return False
+        print(f"  [WARN] upload: {e}")
+        DIAG_DIR.mkdir(exist_ok=True)
+        await page.screenshot(path=str(DIAG_DIR / "cdp_upload_fail.png"))
+        return False
 
 
 async def fill_content(page, title, content):
