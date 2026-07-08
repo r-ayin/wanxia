@@ -17,6 +17,8 @@ posts/
 
 # Browser Use Cookie 持久化（含登录态，切勿提交）
 scripts/.xhs_storage_state.json
+scripts/.xhs_storage_state.json.bak
+scripts/.xhs_health.json
 
 # Python
 .venv/

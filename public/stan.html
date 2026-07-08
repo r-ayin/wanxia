@@ -1,0 +1,11 @@
+<!DOCTYPE html><html lang="zh"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>晚霞</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<link rel="stylesheet" href="/css/style.css"/>
+<style>#map{height:calc(100vh - 100px)!important;min-height:500px}</style></head><body>
+<header class="app-header"><div class="header-left"><h1>全国晚霞预测</h1></div><div class="header-right"><div id="summary-bar" class="summary-bar"></div><div class="header-controls"><span id="update-time"></span><div id="city-buttons"></div><button class="refresh-btn" id="refresh-btn">刷新</button><div id="view-modes" class="view-mode-group"><button class="view-mode-btn active" data-mode="contour">区域</button><button class="view-mode-btn" data-mode="heatmap">热力</button><button class="view-mode-btn" data-mode="markers">标记</button></div></div></div></header>
+<div class="legend-bar"><span>晚霞指数</span><span style="color:#fff9c4">■</span>尚可 <span style="color:#ff9800">■</span>好 <span style="color:#ef5350">■</span>很好 <span style="color:#d32f2f">■</span>优秀</div>
+<main class="app-body"><div id="map"></div></main>
+<div id="loading" class="loading-overlay hidden"><div class="loading-spinner"></div><p></p></div>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet.heat@0.2.0/dist/leaflet-heat.js"></script>
+<script src="/js/app-all.js?v=99"></script></body></html>

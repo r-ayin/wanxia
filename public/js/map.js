@@ -163,18 +163,20 @@ export function renderGridHeatmap(points) {
   clearGridLayer()
 
   const heatData = points.map(p => [p.lat, p.lon, p.score / 100])
+  // 自适应热力半径：点数少（城市网格）用大圈，点数多（全国/杭州）用小圈
+  const isSmallGrid = points.length <= 100
   heatLayer = L.heatLayer(heatData, {
-    radius: 35,
-    blur: 25,
+    radius: isSmallGrid ? 55 : 35,
+    blur: isSmallGrid ? 35 : 25,
     maxZoom: 12,
     max: 1.0,
     gradient: {
-      0.0: 'rgba(200,200,200,0)',
+      0.0: 'rgba(255,255,255,0)',
       0.2: '#fde68a',
       0.4: '#fdba74',
       0.55: '#fb923c',
       0.7: '#f97316',
-      0.8: '#ef4444',
+      0.85: '#ef4444',
       1.0: '#dc143c',
     },
   }).addTo(mapInstance)

@@ -1,304 +1,176 @@
 import { Router } from 'express'
-import { fetchAllCityData } from './weather-fetcher.js'
-import { computeAllPredictions, getWeights } from './prediction-engine.js'
-import { cities } from './cities.js'
 import { cache } from './cache.js'
-import { fetchGridPredictions, GRID_CONFIGS, buildGrid, chunkArray, fetchBatch } from './grid-fetcher.js'
-import { buildContourGeoJSON } from './contour-builder.js'
 import {
-  storeDailyPredictions, storeGridSummary,
   getPredictionHistory, getPredictionsByDate,
   getAccuracyMetrics, getWeightHistory,
   getSocialObservations, getSocialStatus,
 } from './storage.js'
 import { fetchAndStoreSocialData, hasCookie, hasXiaohongshuCookie, cookieStatus, SOCIAL_CITY_IDS } from './social-scraper.js'
 import { runSocialCalibration, generateInvestigationReport } from './social-calibration.js'
+import { getWeights } from './prediction-engine.js'
+import { cities } from './cities.js'
 
 const router = Router()
 
-const CONTOUR_TTL = 60 * 60 * 1000
+// ── 缓存优先读取辅助函数 ──────────────────────────────────────────
+// 所有气象数据端点只读内存缓存（由 prefetch-scheduler.js 定时填充）
+// 永不穿透到 open-meteo API
 
-function augmentGridWithCities(gridPoints, cityPredictions) {
-  if (!cityPredictions || !cityPredictions.length) return
-  for (const city of cityPredictions) {
-    let nearest = null, nearestDist = Infinity
-    for (const p of gridPoints) {
-      const d = (p.lat - city.lat) ** 2 + (p.lon - city.lon) ** 2
-      if (d < nearestDist) { nearestDist = d; nearest = p }
+/**
+ * 从缓存读数据，提供降级响应
+ * @param {string} cacheKey - 缓存键
+ * @param {string} label - 人类可读的数据类型名（用于错误信息）
+ * @returns {{ data: any, status: number, error?: string, detail?: string, retry?: number }}
+ */
+function readFromCache(cacheKey, label) {
+  const entry = cache.get(cacheKey)
+
+  if (entry) {
+    // 有缓存数据 — 无论 fresh/stale 都返回
+    return {
+      data: {
+        ...entry.data,
+        cacheAge: entry.age,
+        fromCache: true,
+        ...(entry.stale ? { stale: true } : {}),
+      },
+      status: 200,
     }
-    if (nearest && nearestDist < 1.5 && city.score > nearest.score) {
-      nearest.score = city.score
-      nearest.tier = city.tier
-      nearest.tierCn = city.tierCn
-    }
+  }
+
+  // 缓存完全为空 — 冷启动阶段，尚未完成首轮预取
+  return {
+    data: {
+      error: `${label}正在预热中`,
+      detail: '预取调度器尚未完成首轮数据拉取，请稍后刷新',
+      retry: 30,
+      fromCache: false,
+      warming: true,
+    },
+    status: 503,
   }
 }
 
-async function getPredictions() {
+// ── 城市预报 ──────────────────────────────────────────────────────
+
+router.get('/predictions', (req, res) => {
+  // 历史日期查询走 SQLite，不走缓存
+  const targetDate = req.query.date
+  if (targetDate) {
+    const historical = getPredictionsByDate(targetDate)
+    if (!historical) {
+      return res.status(404).json({ error: '该日期无预测数据', date: targetDate })
+    }
+    return res.json(historical)
+  }
+
   const today = new Date().toISOString().slice(0, 10)
   const cacheKey = `predictions-${today}`
-
-  const cached = cache.get(cacheKey)
-  if (cached && !cached.stale) {
-    return { ...cached.data, cacheAge: cached.age, fromCache: true }
-  }
-
-  if (cache.isLoading(cacheKey)) {
-    if (cached) return { ...cached.data, cacheAge: 'stale', fromCache: true, stale: true }
-    await new Promise(r => setTimeout(r, 2000))
-    const retry = cache.get(cacheKey)
-    if (retry) return { ...retry.data, fromCache: true }
-  }
-
-  cache.setLoading(cacheKey)
-  try {
-    const weatherData = await fetchAllCityData()
-    const predictions = computeAllPredictions(weatherData, cities)
-
-    const result = {
-      generatedAt: new Date().toISOString(),
-      date: today,
-      cityCount: predictions.length,
-      summary: buildSummary(predictions),
-      cities: predictions,
-    }
-
-    cache.set(cacheKey, result)
-
-    try { storeDailyPredictions(today, predictions) } catch (e) {
-      console.error('Storage write failed:', e.message)
-    }
-
-    return { ...result, fromCache: false }
-  } catch (err) {
-    cache.clearLoading(cacheKey)
-    if (cached) return { ...cached.data, stale: true, error: err.message }
-    throw err
-  }
-}
-
-function buildSummary(predictions) {
-  const tiers = { Great: 0, Good: 0, Fair: 0, Poor: 0 }
-  let bestCity = null
-  let bestScore = -1
-
-  for (const p of predictions) {
-    tiers[p.tier]++
-    if (p.score > bestScore) {
-      bestScore = p.score
-      bestCity = p
-    }
-  }
-
-  const avgScore = Math.round(predictions.reduce((s, p) => s + p.score, 0) / predictions.length)
-
-  return {
-    averageScore: avgScore,
-    tierDistribution: tiers,
-    bestCity: bestCity ? { name: bestCity.name, nameEn: bestCity.nameEn, score: bestCity.score, tierCn: bestCity.tierCn } : null,
-    recommendation: avgScore >= 60
-      ? '今日全国晚霞条件较好，建议关注西部和高原地区'
-      : avgScore >= 40
-        ? '今日部分地区有机会看到不错的晚霞'
-        : '今日全国晚霞条件一般',
-  }
-}
-
-router.get('/predictions', async (req, res) => {
-  try {
-    // 支持历史日期查询（用于日环比文案）
-    const targetDate = req.query.date
-    if (targetDate) {
-      const historical = getPredictionsByDate(targetDate)
-      if (!historical) {
-        return res.status(404).json({ error: '该日期无预测数据', date: targetDate })
-      }
-      return res.json(historical)
-    }
-    const data = await getPredictions()
-    res.json(data)
-  } catch (err) {
-    console.error('Prediction fetch failed:', err.message)
-    res.status(502).json({ error: '气象数据暂时不可用', detail: err.message, retry: 30 })
-  }
+  const { data, status } = readFromCache(cacheKey, '城市预报数据')
+  res.status(status).json(data)
 })
 
-router.get('/predictions/:cityId', async (req, res) => {
-  try {
-    const data = await getPredictions()
-    const city = data.cities.find(c => c.id === req.params.cityId)
-    if (!city) return res.status(404).json({ error: '城市未找到' })
-    res.json(city)
-  } catch (err) {
-    res.status(502).json({ error: '气象数据暂时不可用', retry: 30 })
+router.get('/predictions/:cityId', (req, res) => {
+  const today = new Date().toISOString().slice(0, 10)
+  const cacheKey = `predictions-${today}`
+  const { data, status } = readFromCache(cacheKey, '城市预报数据')
+
+  if (status !== 200) {
+    return res.status(status).json(data)
   }
+
+  const city = data.cities?.find(c => c.id === req.params.cityId)
+  if (!city) return res.status(404).json({ error: '城市未找到' })
+  res.json(city)
 })
 
-router.get('/grid/:name', async (req, res) => {
-  try {
-    const gridName = req.params.name || 'hangzhou'
-    const cacheKey = `grid-${gridName}-${new Date().toISOString().slice(0, 10)}`
+// ── 网格数据 ──────────────────────────────────────────────────────
 
-    const cached = cache.get(cacheKey)
-    if (cached && !cached.stale) {
-      return res.json({ ...cached.data, cacheAge: cached.age, fromCache: true })
-    }
-
-    if (cache.isLoading(cacheKey)) {
-      if (cached) return res.json({ ...cached.data, cacheAge: 'stale', fromCache: true, stale: true })
-      await new Promise(r => setTimeout(r, 3000))
-      const retry = cache.get(cacheKey)
-      if (retry) return res.json({ ...retry.data, fromCache: true })
-    }
-
-    cache.setLoading(cacheKey)
-    const data = await fetchGridPredictions(gridName)
-    cache.set(cacheKey, data)
-    res.json(data)
-  } catch (err) {
-    console.error('Grid fetch failed:', err.message)
-    cache.clearLoading(`grid-${req.params.name}-${new Date().toISOString().slice(0, 10)}`)
-    res.status(502).json({ error: '网格数据暂时不可用', detail: err.message, retry: 60 })
-  }
+// 城市网格列表（前端按钮动态渲染）
+router.get('/grids', (req, res) => {
+  res.json([
+    { id: 'national', name: '全国', center: [35.0, 105.0], zoom: 4, isNational: true },
+    { id: 'hangzhou', name: '杭州', center: [30.0, 120.2], zoom: 8 },
+    { id: 'shanghai', name: '上海', center: [31.2, 121.5], zoom: 8 },
+    { id: 'beijing', name: '北京', center: [39.9, 116.4], zoom: 8 },
+    { id: 'chengdu', name: '成都', center: [30.6, 104.1], zoom: 8 },
+    { id: 'guangzhou', name: '广州', center: [23.1, 113.3], zoom: 8 },
+    { id: 'xiamen', name: '厦门', center: [24.5, 118.1], zoom: 9 },
+    { id: 'kunming', name: '昆明', center: [25.0, 102.7], zoom: 8 },
+  ])
 })
 
-router.get('/contour', async (req, res) => {
-  try {
-    const gridName = 'national_contour'
-    const today = new Date().toISOString().slice(0, 10)
-    const cacheKey = `contour-${today}`
-
-    const cached = cache.get(cacheKey)
-    if (cached && !cached.stale) {
-      return res.json({ ...cached.data, fromCache: true })
-    }
-
-    if (cache.isLoading(cacheKey)) {
-      if (cached) return res.json({ ...cached.data, fromCache: true, stale: true })
-      await new Promise(r => setTimeout(r, 5000))
-      const retry = cache.get(cacheKey)
-      if (retry) return res.json({ ...retry.data, fromCache: true })
-    }
-
-    cache.setLoading(cacheKey)
-
-    const gridData = await fetchGridPredictions(gridName)
-
-    try {
-      const predData = await getPredictions()
-      augmentGridWithCities(gridData.points, predData.cities)
-    } catch (e) {}
-
-    const contours = buildContourGeoJSON(gridData.points, gridData.config)
-
-    const total = gridData.points.length
-    const tiers = { Great: 0, Good: 0, Fair: 0, Poor: 0 }
-    for (const p of gridData.points) tiers[p.tier]++
-    const avgScore = total > 0 ? Math.round(gridData.points.reduce((s, p) => s + p.score, 0) / total) : 0
-
-    const result = {
-      generatedAt: gridData.generatedAt,
-      pointCount: total,
-      contours,
-      summary: {
-        avgScore,
-        greatPct: Math.round(tiers.Great / total * 100),
-        goodPct: Math.round(tiers.Good / total * 100),
-        fairPct: Math.round(tiers.Fair / total * 100),
-        poorPct: Math.round(tiers.Poor / total * 100),
-      },
-    }
-
-    cache.set(cacheKey, result, CONTOUR_TTL)
-
-    try { storeGridSummary(today, gridName, gridData.points) } catch (e) {
-      console.error('Grid summary storage failed:', e.message)
-    }
-
-    res.json(result)
-  } catch (err) {
-    console.error('Contour generation failed:', err.message)
-    cache.clearLoading(`contour-${new Date().toISOString().slice(0, 10)}`)
-    res.status(502).json({ error: '等值面数据生成失败', detail: err.message, retry: 120 })
-  }
+router.get('/grid/:name', (req, res) => {
+  const gridName = req.params.name || 'hangzhou'
+  const today = new Date().toISOString().slice(0, 10)
+  const cacheKey = `grid-${gridName}-${today}`
+  const { data, status } = readFromCache(cacheKey, '网格数据')
+  res.status(status).json(data)
 })
 
-router.get('/contour/stream', async (req, res) => {
+// ── 等值面（非流式） ──────────────────────────────────────────────
+
+router.get('/contour', (req, res) => {
+  const today = new Date().toISOString().slice(0, 10)
+  const cacheKey = `contour-${today}`
+  const { data, status } = readFromCache(cacheKey, '等值面数据')
+  res.status(status).json(data)
+})
+
+// ── 等值面（SSE 流式） ────────────────────────────────────────────
+
+router.get('/contour/stream', (req, res) => {
   res.setHeader('Content-Type', 'text/event-stream')
   res.setHeader('Cache-Control', 'no-cache')
   res.setHeader('Connection', 'keep-alive')
   res.flushHeaders()
 
   const today = new Date().toISOString().slice(0, 10)
-  const cacheKey = `contour-${today}`
-  const cached = cache.get(cacheKey)
 
-  if (cached && !cached.stale) {
-    res.write(`data: ${JSON.stringify({ type: 'complete', contours: cached.data.contours, summary: cached.data.summary, pointCount: cached.data.pointCount, points: cached.data.points })}\n\n`)
+  // 优先查 contour 缓存（含 contours + points）
+  const contourKey = `contour-${today}`
+  const contourEntry = cache.get(contourKey)
+  if (contourEntry) {
+    const d = contourEntry.data
+    res.write(`data: ${JSON.stringify({
+      type: 'complete',
+      contours: d.contours,
+      summary: d.summary,
+      pointCount: d.pointCount,
+      points: d.points,
+    })}\n\n`)
     res.end()
     return
   }
 
-  const gridName = 'national_contour'
-  const config = GRID_CONFIGS[gridName]
-  const points = buildGrid(config)
-  const chunks = chunkArray(points, 200)
-  const allResults = []
-
-  try {
-    for (let i = 0; i < chunks.length; i++) {
-      if (res.destroyed) return
-
-      const batchResults = await fetchBatch(chunks[i], config)
-      allResults.push(...batchResults)
-
-      res.write(`data: ${JSON.stringify({
-        type: 'batch',
-        batch: i + 1,
-        total: chunks.length,
-        points: batchResults,
-        step: config.step,
-      })}\n\n`)
-
-      if (i < chunks.length - 1) {
-        await new Promise(r => setTimeout(r, 1000))
-      }
-    }
-
-    try {
-      const predData = await getPredictions()
-      augmentGridWithCities(allResults, predData.cities)
-    } catch (e) {}
-
-    const contours = buildContourGeoJSON(allResults, config)
-    const total = allResults.length
-    const tiers = { Great: 0, Good: 0, Fair: 0, Poor: 0 }
-    for (const p of allResults) tiers[p.tier]++
-    const avgScore = total > 0 ? Math.round(allResults.reduce((s, p) => s + p.score, 0) / total) : 0
-
-    const result = {
-      generatedAt: new Date().toISOString(),
-      pointCount: total,
-      contours,
-      points: allResults,
-      summary: {
-        avgScore,
-        greatPct: Math.round(tiers.Great / total * 100),
-        goodPct: Math.round(tiers.Good / total * 100),
-        fairPct: Math.round(tiers.Fair / total * 100),
-        poorPct: Math.round(tiers.Poor / total * 100),
-      },
-    }
-
-    cache.set(cacheKey, result, CONTOUR_TTL)
-
-    res.write(`data: ${JSON.stringify({ type: 'complete', contours, summary: result.summary, pointCount: total, points: allResults })}\n\n`)
-  } catch (err) {
-    res.write(`data: ${JSON.stringify({ type: 'error', message: err.message })}\n\n`)
+  // 降级：查网格原始数据缓存（无等值面，但有点数据）
+  const gridKey = `grid-national_contour-${today}`
+  const gridEntry = cache.get(gridKey)
+  if (gridEntry) {
+    const d = gridEntry.data
+    res.write(`data: ${JSON.stringify({
+      type: 'complete',
+      points: d.points,
+      pointCount: d.points?.length || 0,
+      contours: null,
+      summary: null,
+      degraded: true,
+      message: '等值面尚未生成，使用网格点数据',
+    })}\n\n`)
+    res.end()
+    return
   }
 
+  // 完全无缓存 — 预热中
+  res.write(`data: ${JSON.stringify({
+    type: 'error',
+    message: '数据正在预热中，请稍后刷新',
+    retry: 30,
+  })}\n\n`)
   res.end()
 })
+
+// ── 历史数据 ──────────────────────────────────────────────────────
 
 router.get('/history/:cityId', async (req, res) => {
   try {
@@ -306,7 +178,8 @@ router.get('/history/:cityId', async (req, res) => {
     const history = getPredictionHistory(req.params.cityId, days)
     res.json({ cityId: req.params.cityId, days, records: history })
   } catch (err) {
-    res.status(500).json({ error: '历史数据查询失败', detail: err.message })
+    console.error('Route error:', err)
+    res.status(500).json({ error: '历史数据查询失败' })
   }
 })
 
@@ -317,7 +190,8 @@ router.get('/accuracy', async (req, res) => {
     const currentWeights = getWeights()
     res.json({ days, ...metrics, currentWeights })
   } catch (err) {
-    res.status(500).json({ error: '精度数据查询失败', detail: err.message })
+    console.error('Route error:', err)
+    res.status(500).json({ error: '精度数据查询失败' })
   }
 })
 
@@ -327,24 +201,33 @@ router.get('/weights/history', async (req, res) => {
     const history = getWeightHistory(days)
     res.json({ days, records: history })
   } catch (err) {
-    res.status(500).json({ error: '权重历史查询失败', detail: err.message })
+    console.error('Route error:', err)
+    res.status(500).json({ error: '权重历史查询失败' })
   }
 })
 
 router.get('/health', (req, res) => {
   const today = new Date().toISOString().slice(0, 10)
-  const cached = cache.get(`predictions-${today}`)
-  const contourCached = cache.get(`contour-${today}`)
+  const predEntry = cache.get(`predictions-${today}`)
+  const contourEntry = cache.get(`contour-${today}`)
+  const gridHZ = cache.get(`grid-hangzhou-${today}`)
+  const gridNatl = cache.get(`grid-national_contour-${today}`)
+
   res.json({
     status: 'ok',
-    cacheStatus: cached ? (cached.stale ? 'stale' : 'fresh') : 'empty',
-    contourCacheStatus: contourCached ? (contourCached.stale ? 'stale' : 'fresh') : 'empty',
+    cache: {
+      predictions: predEntry ? (predEntry.stale ? 'stale' : 'fresh') : 'empty',
+      contour: contourEntry ? (contourEntry.stale ? 'stale' : 'fresh') : 'empty',
+      'grid-hangzhou': gridHZ ? (gridHZ.stale ? 'stale' : 'fresh') : 'empty',
+      'grid-national': gridNatl ? (gridNatl.stale ? 'stale' : 'fresh') : 'empty',
+    },
     cityCount: cities.length,
     currentWeights: getWeights(),
+    dataSource: 'prefetch-cache', // 标记数据来源，便于排查
   })
 })
 
-// ── Social calibration endpoints ──────────────────────────────────────────────
+// ── 社媒校准（不变） ──────────────────────────────────────────────
 
 router.get('/social/status', (req, res) => {
   try {
@@ -358,7 +241,8 @@ router.get('/social/status', (req, res) => {
       note: !cookies.dual ? '双源验证未激活：微博cookie=' + (cookies.weibo ? '✅' : '❌') + ' · 小红书cookie=' + (cookies.xiaohongshu ? '✅' : '❌') : null,
     })
   } catch (err) {
-    res.status(500).json({ error: err.message })
+    console.error('Route error:', err)
+    res.status(500).json({ error: '社媒状态查询失败' })
   }
 })
 
@@ -385,8 +269,9 @@ router.post('/social/fetch', async (req, res) => {
       res.write(`data: ${JSON.stringify({ type: 'complete', date, ok, failed })}\n\n`)
     }
   } catch (err) {
+    console.error('Route error:', err)
     if (!res.destroyed) {
-      res.write(`data: ${JSON.stringify({ type: 'error', message: err.message })}\n\n`)
+      res.write(`data: ${JSON.stringify({ type: 'error', message: '数据获取失败' })}\n\n`)
     }
   }
   res.end()
@@ -398,7 +283,8 @@ router.post('/social/calibrate', (req, res) => {
     const result = runSocialCalibration(days)
     res.json(result)
   } catch (err) {
-    res.status(500).json({ error: err.message })
+    console.error('Route error:', err)
+    res.status(500).json({ error: '社媒校准失败' })
   }
 })
 
@@ -408,7 +294,8 @@ router.get('/social/report', (req, res) => {
     const report = generateInvestigationReport(days)
     res.json(report)
   } catch (err) {
-    res.status(500).json({ error: err.message })
+    console.error('Route error:', err)
+    res.status(500).json({ error: '报告生成失败' })
   }
 })
 
@@ -418,7 +305,8 @@ router.get('/social/history/:cityId', (req, res) => {
     const obs = getSocialObservations(req.params.cityId, days)
     res.json({ cityId: req.params.cityId, days, records: obs })
   } catch (err) {
-    res.status(500).json({ error: err.message })
+    console.error('Route error:', err)
+    res.status(500).json({ error: '社媒历史查询失败' })
   }
 })
 

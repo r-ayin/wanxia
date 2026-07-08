@@ -1,0 +1,341 @@
+{
+    "cookies": [
+        {
+            "name": "xsecappid",
+            "value": "ugc",
+            "domain": ".xiaohongshu.com",
+            "path": "/",
+            "expires": 1813317130,
+            "size": 12,
+            "httpOnly": false,
+            "secure": false,
+            "session": false,
+            "priority": "Medium",
+            "sourceScheme": "Secure",
+            "sourcePort": 443
+        },
+        {
+            "name": "gid",
+            "value": "yjdfj2y8yDi2yjdfj28dyIv3Sj4TFWTSuqlFjf8lAqxFjk28Wlu0TV888y22yJy80iJ4YYjq",
+            "domain": ".xiaohongshu.com",
+            "path": "/",
+            "expires": 1816341142.426536,
+            "size": 75,
+            "httpOnly": false,
+            "secure": false,
+            "session": false,
+            "priority": "Medium",
+            "sourceScheme": "Secure",
+            "sourcePort": 443
+        },
+        {
+            "name": "ets",
+            "value": "1781777490942",
+            "domain": ".xiaohongshu.com",
+            "path": "/",
+            "expires": 1784369490.942136,
+            "size": 16,
+            "httpOnly": false,
+            "secure": false,
+            "session": false,
+            "sameSite": "Lax",
+            "priority": "Medium",
+            "sourceScheme": "NonSecure",
+            "sourcePort": 80
+        },
+        {
+            "name": "a1",
+            "value": "19eda36e4b8w9c4f0h6vq3kelgbos1q2r9gpt57ov50000267319",
+            "domain": ".xiaohongshu.com",
+            "path": "/",
+            "expires": 1813313491,
+            "size": 54,
+            "httpOnly": false,
+            "secure": false,
+            "session": false,
+            "sameSite": "Lax",
+            "priority": "Medium",
+            "sourceScheme": "NonSecure",
+            "sourcePort": 80
+        },
+        {
+            "name": "webId",
+            "value": "5d7cdfb46a60a0707d8fdd6be3f80966",
+            "domain": ".xiaohongshu.com",
+            "path": "/",
+            "expires": 1813313491,
+            "size": 37,
+            "httpOnly": false,
+            "secure": false,
+            "session": false,
+            "sameSite": "Lax",
+            "priority": "Medium",
+            "sourceScheme": "NonSecure",
+            "sourcePort": 80
+        },
+        {
+            "name": "customer-sso-sid",
+            "value": "68c517652676155838070784vxenxdwfaeg8uiav",
+            "domain": ".xiaohongshu.com",
+            "path": "/",
+            "expires": 1782382311.955729,
+            "size": 56,
+            "httpOnly": true,
+            "secure": false,
+            "session": false,
+            "priority": "Medium",
+            "sourceScheme": "Secure",
+            "sourcePort": 443
+        },
+        {
+            "name": "x-user-id-creator.xiaohongshu.com",
+            "value": "693526b90000000032027b8b",
+            "domain": ".xiaohongshu.com",
+            "path": "/",
+            "expires": 1816341128.955844,
+            "size": 57,
+            "httpOnly": true,
+            "secure": false,
+            "session": false,
+            "priority": "Medium",
+            "sourceScheme": "Secure",
+            "sourcePort": 443
+        },
+        {
+            "name": "customerClientId",
+            "value": "464283644558219",
+            "domain": ".xiaohongshu.com",
+            "path": "/",
+            "expires": 1816337512.16598,
+            "size": 31,
+            "httpOnly": true,
+            "secure": false,
+            "session": false,
+            "sameSite": "Lax",
+            "priority": "Medium",
+            "sourceScheme": "NonSecure",
+            "sourcePort": 80
+        },
+        {
+            "name": "acw_tc",
+            "value": "0a0d096b17817803491482503e558120fdd318eb67970688b7a95608c4b0fe",
+            "domain": "creator.xiaohongshu.com",
+            "path": "/",
+            "expires": 1781782146.149741,
+            "size": 68,
+            "httpOnly": true,
+            "secure": false,
+            "session": false,
+            "sameSite": "Lax",
+            "priority": "Medium",
+            "sourceScheme": "NonSecure",
+            "sourcePort": 80
+        },
+        {
+            "name": "acw_tc",
+            "value": "0a8f07dc17817803514936523ea73441fa20203c7d6b4e5dbbd7c9359dcb36",
+            "domain": "edith.xiaohongshu.com",
+            "path": "/",
+            "expires": 1781782148.498214,
+            "size": 68,
+            "httpOnly": true,
+            "secure": false,
+            "session": false,
+            "sameSite": "Lax",
+            "priority": "Medium",
+            "sourceScheme": "NonSecure",
+            "sourcePort": 80
+        },
+        {
+            "name": "acw_tc",
+            "value": "0a0d0fba17817803516063521e85bd7330ec62c680fd11ad08f3aadd2d8313",
+            "domain": "customer.xiaohongshu.com",
+            "path": "/",
+            "expires": 1781782148.72931,
+            "size": 68,
+            "httpOnly": true,
+            "secure": false,
+            "session": false,
+            "sameSite": "Lax",
+            "priority": "Medium",
+            "sourceScheme": "NonSecure",
+            "sourcePort": 80
+        },
+        {
+            "name": "access-token-creator.xiaohongshu.com",
+            "value": "customer.creator.AT-68c517652691686439845896qwb2c1a53qvpmlon",
+            "domain": ".xiaohongshu.com",
+            "path": "/",
+            "expires": 1784373127.955897,
+            "size": 96,
+            "httpOnly": true,
+            "secure": false,
+            "session": false,
+            "priority": "Medium",
+            "sourceScheme": "Secure",
+            "sourcePort": 443
+        },
+        {
+            "name": "galaxy_creator_session_id",
+            "value": "y0dYrLWdQDQ4duOdYPUOVleTf9g1vhoyj8AE",
+            "domain": ".xiaohongshu.com",
+            "path": "/",
+            "expires": 1784373128.955933,
+            "size": 61,
+            "httpOnly": true,
+            "secure": false,
+            "session": false,
+            "priority": "Medium",
+            "sourceScheme": "Secure",
+            "sourcePort": 443
+        },
+        {
+            "name": "galaxy.creator.beaker.session.id",
+            "value": "1781781131974040586605",
+            "domain": ".xiaohongshu.com",
+            "path": "/",
+            "expires": 1784373128.955979,
+            "size": 54,
+            "httpOnly": true,
+            "secure": false,
+            "session": false,
+            "priority": "Medium",
+            "sourceScheme": "Secure",
+            "sourcePort": 443
+        },
+        {
+            "name": "websectiga",
+            "value": "9730ffafd96f2d09dc024760e253af6ab1feb0002827740b95a255ddf6847fc8",
+            "domain": ".xiaohongshu.com",
+            "path": "/",
+            "expires": 1782040471,
+            "size": 74,
+            "httpOnly": false,
+            "secure": false,
+            "session": false,
+            "priority": "Medium",
+            "sourceScheme": "Secure",
+            "sourcePort": 443
+        },
+        {
+            "name": "sec_poison_id",
+            "value": "359bafe6-d5ea-4e80-9627-25d3adaa099e",
+            "domain": ".xiaohongshu.com",
+            "path": "/",
+            "expires": 1781781876,
+            "size": 49,
+            "httpOnly": false,
+            "secure": false,
+            "session": false,
+            "priority": "Medium",
+            "sourceScheme": "Secure",
+            "sourcePort": 443
+        },
+        {
+            "name": "loadts",
+            "value": "1781781130231",
+            "domain": ".xiaohongshu.com",
+            "path": "/",
+            "expires": 1813317130,
+            "size": 19,
+            "httpOnly": false,
+            "secure": false,
+            "session": false,
+            "priority": "Medium",
+            "sourceScheme": "Secure",
+            "sourcePort": 443
+        },
+        {
+            "name": "acw_tc",
+            "value": "0a422b2617817809992208961eecc11a7206a9e6da3471e3b36c3fe0e0e3d2",
+            "domain": "fe.xiaohongshu.com",
+            "path": "/",
+            "expires": 1781782796.208104,
+            "size": 68,
+            "httpOnly": true,
+            "secure": false,
+            "session": false,
+            "priority": "Medium",
+            "sourceScheme": "Secure",
+            "sourcePort": 443
+        },
+        {
+            "name": "tgw_l7_route",
+            "value": "fc1b8cd6a4770066d08b4343518d347a",
+            "domain": "ros-upload.xiaohongshu.com",
+            "path": "/",
+            "expires": 1781781954.621056,
+            "size": 44,
+            "httpOnly": false,
+            "secure": true,
+            "session": false,
+            "sameSite": "None",
+            "priority": "Medium",
+            "sourceScheme": "Secure",
+            "sourcePort": 443
+        }
+    ],
+    "origins": [
+        {
+            "origin": "https://creator.xiaohongshu.com",
+            "localStorage": [
+                {
+                    "name": "b1b1",
+                    "value": "1"
+                },
+                {
+                    "name": "USER_INFO_FOR_BIZ",
+                    "value": "{\"userId\":\"693526b90000000032027b8b\",\"userName\":\"抓住日落\",\"userAvatar\":\"https://sns-avatar-qc.xhscdn.com/avatar/1040g2jo321hmueu57k605q9l4qsskusbv39ofe8?imageView2/2/w/80/format/jpg\",\"userDesc\":\"还没有简介\",\"redId\":\"95114176219\",\"role\":\"creator\",\"permissions\":[\"creatorCollege\",\"creatorWiki\",\"noteInspiration\",\"creatorHome\",\"creatorData\",\"USER_GROUP\",\"creatorActivityCenter\"],\"zone\":\"86\",\"phone\":\"18330293065\",\"relatedUserId\":null,\"relatedUserName\":null,\"realNameVerified\":false,\"realNameVerifyLink\":\"xhsdiscover://account/realName/atomization?businessCode=capa_podcast\",\"skillhubInfo\":{\"realNameVerified\":false,\"realNameVerifyUrl\":\"xhsdiscover://account/realName/atomization?businessCode=sns_skillhub\"},\"longAudioConfig\":{\"audioMinSeconds\":600,\"audioFileMaxSize\":1024,\"audioMaxSeconds\":7200,\"hasAudio\":true,\"summaryMaxDurationSeconds\":10800,\"needRealName\":false},\"cocreate\":null,\"advertiseBlockConfig\":null,\"kolCoOrder\":false}"
+                },
+                {
+                    "name": "dsllt",
+                    "value": "1781781251180"
+                },
+                {
+                    "name": "p1",
+                    "value": "6"
+                },
+                {
+                    "name": "publish-uploader-history-upload-speed",
+                    "value": "[{\"speed\":[1.1345003323731442],\"domain\":\"ros-upload.xiaohongshu.com\",\"timestamp\":1781781136080},{\"speed\":[1.031426269137792],\"domain\":\"ros-upload-d4.xhscdn.com\",\"timestamp\":1781781141044}]"
+                },
+                {
+                    "name": "last_tiga_update_time",
+                    "value": "1781781271391"
+                },
+                {
+                    "name": "USER_INFO",
+                    "value": "{\"user\":{\"type\":\"User\",\"value\":{\"userId\":\"693526b90000000032027b8b\",\"loginUserType\":\"creator\"}}}"
+                },
+                {
+                    "name": "NEW_XHS_ABTEST_REPORT_KEY",
+                    "value": "{\"5d7cdfb46a60a0707d8fdd6be3f80966693526b90000000032027b8b\":\"2026-06-18\"}"
+                },
+                {
+                    "name": "snsWebPublishCurrentUser",
+                    "value": "693526b90000000032027b8b"
+                },
+                {
+                    "name": "sdt_source_storage_key",
+                    "value": "{\"url\":\"https://fe-static.xhscdn.com/as/v2/fp/643f48183a62c46e6c924b3f0456767a.js\",\"desVersion\":\"2\",\"commonPatch\":[\"/fe_api/burdock/v2/note/post\",\"/api/sns/web/v1/comment/post\",\"/api/sns/web/v1/note/like\",\"/api/sns/web/v1/note/collect\",\"/api/sns/web/v1/user/follow\",\"/api/sns/web/v1/feed\",\"/api/sns/web/v1/login/activate\",\"/api/sns/web/v1/note/metrics_report\",\"/api/redcaptcha\",\"/api/store/jpd/main\",\"/phoenix/api/strategy/getAppStrategy\",\"/web_api/sns/v2/note\"],\"signUrl\":\"https://fe-static.xhscdn.com/as/v1/f218/a15/public/04b29480233f4def5c875875b6bdc3b1.js\",\"reportUrl\":\"/api/sec/v1/shield/webprofile\",\"validate\":false,\"signVersion\":\"1\",\"xhsTokenUrl\":\"https://fe-static.xhscdn.com/as/v1/3e44/public/bf7d4e32677698655a5cadc581fd09b3.js\",\"extraInfo\":{\"kbconf\":null,\"fpMatchUrls\":null}}"
+                },
+                {
+                    "name": "b1",
+                    "value": "I38rHdgsjopgIvesdVwgIC+oIELmBZ5e3VwXLgFTIxS3bqwErFeexd0ekncAzMFYnqthIhJeSdMxqqwdIvAsWBchwPttgm46KUzxIh0s0LKsjqwny7DZIvosxbPjyZuAIhKeDa7sfUTTJqtR+qwApdpNIChmNI8KzVwSICgekutHwqwDIEFqIE/sTIZiIxrMIvgedqwR+7pPzZNsdY3efqtAIkNe3VwgqqtpputxKzgs1WpeICVWIhQ0/PtQKVwAI3Z2omdeiqwfICAeTVtrIE++IEmncfdejgzYroosfqwOZWoedLDDBogsjZpBIxKsdVtaIkvefqwRbMLIGf4BI37sxqtE/WOex0l4IhQsIE8+H9quIxhnqz8gIkIfoqwkICrWGd3sdlOeVPw3IvAe0fgedDhwIEOs1W+FyqtXIh3e1dAe3FOsVPwOefOsYqt3IxTsgU6sSuw5L7KsfVwgI3RzI3kVoPws/qwqoUinJM0sde7sVqw+IkKeD0AsVLRBIv5ex0dedI+BICgsfPwHIvIFQPwHPVtAIx5e6utvIkoe6uw5Ih3sjuw5NqwGoVwuICzTIvRtQeVAGl/siqtFIhPtIieeYuwoeWccpUOsDskuIhRytPwwzqwAIkesWqtuqIAsVF6s1IbLIE0s6edsiPtccPwrICJejqwCIiveksrLI37eD9KeWVtRI37sxuwU4eQNIEH+Iv7sxM6ex7vsYDosSPtzIkL1IEqP8qwcIihfIxNefSqXc7KsjPwHIkV5GPwKe75exj0skutiJqtlIkF8Ivk7QqtYoPwhIk3siUgeDPw1KPtvIvmlwutoIiZW+sPLIiNsf7Jsi7deVVwF+qtzIiiJIkos1qtYIEAedbmDICbiHmYyICkFIv0ekuwvqutnQqt8Iiu0IvosYs5eTPw6JDFVICig2qtbOPtMI3haIiboIilRIv0e3FNskFbeNPwKICuU2Pw2oPwUIh5eDbHII3Fb/g6e0utZoutaZZLhBBqDIkm1zqwmIivsieYnIiQHZqwtIxpesPt+eutsIhIqIvmRICMsouwhI3uLIE5s1qwhZZRIIhGgIE5sTgvsSuw+ICYWIhhmnWuYIvpEqmrSIE7s0FveYVtKIi6sfPtSIEWdIE0sxqwdIEYR+qwbIEdsSAL0qVtHBVtRIEoekutSIvNs1Sz/IC7sTdJsjVt9Zzes3qwR+77s0PtMIiosW0vefVtiICH4I3YvmVwYmjRTIi6eTuw6QYeejATpPPtxIizWIxKs1ASVIkJeVqt9Ihq9IC5ejBYHIvFMI3hX/nYRIEOe6ArzIClwIiGtIhesimM5ZVtRgPtQmzAeff6ejPwYI3eeSZ5siVtqgVwOI3krnqw0pPwcwVwYOqt3GqwSKBve6m/eiB3sil6eVVwtIi44IELFI3VvICJs1oOe6arAQVwBIiDtmqtKJd0s3qtZIxOsDYvsWehgIx6sfut8wI4YIvAsYqwiIv0e1qt94qw8I3/ef9+a2PtsngAs0zS0Ik0sjVwQnut7nn3eTqtxpVtNZPwsIC8bIETAoZ7sYFde1utDICNsiqtwouw8KaKe6cYdL7m5JbP1bVtNLqwNIviAIx+tIxV08I3sT7+8I3kgIvi2rVteIxVAPqwmIkKeVZijoqthIhhJcuteI35sTzpBIhPfI35sWPwzmPtQ"
+                },
+                {
+                    "name": "unloads_record",
+                    "value": "[[1781777487623.8,24911],[1781780344497.5,4544],[1781780966993.2,1956]]"
+                },
+                {
+                    "name": "_renderInfo",
+                    "value": "angle (nvidia, nvidia geforce rtx 2080 ti (0x00001e04) direct3d11 vs_5_0 ps_5_0, d3d11)"
+                },
+                {
+                    "name": "xhs_context_networkQuality",
+                    "value": "GOOD"
+                }
+            ]
+        }
+    ]
+}

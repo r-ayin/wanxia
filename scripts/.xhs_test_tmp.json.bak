@@ -1,0 +1,197 @@
+{
+    "cookies": [
+        {
+            "name": "acw_tc",
+            "value": "0a0d068317817747756084803ecb6c1c328bba2f0762884be67f06adc24767",
+            "domain": "creator.xiaohongshu.com",
+            "path": "/",
+            "expires": 1781776572.786104,
+            "size": 68,
+            "httpOnly": true,
+            "secure": false,
+            "session": false,
+            "priority": "Medium",
+            "sourceScheme": "Secure",
+            "sourcePort": 443
+        },
+        {
+            "name": "ets",
+            "value": "1781774774639",
+            "domain": ".xiaohongshu.com",
+            "path": "/",
+            "expires": 1784366774.640041,
+            "size": 16,
+            "httpOnly": false,
+            "secure": false,
+            "session": false,
+            "priority": "Medium",
+            "sourceScheme": "Secure",
+            "sourcePort": 443
+        },
+        {
+            "name": "xsecappid",
+            "value": "ugc",
+            "domain": ".xiaohongshu.com",
+            "path": "/",
+            "expires": 1813310918,
+            "size": 12,
+            "httpOnly": false,
+            "secure": false,
+            "session": false,
+            "priority": "Medium",
+            "sourceScheme": "Secure",
+            "sourcePort": 443
+        },
+        {
+            "name": "a1",
+            "value": "19eda0d722bifbh5d14ovjm2z3alqk3pzufl6bbj750000403892",
+            "domain": ".xiaohongshu.com",
+            "path": "/",
+            "expires": 1813310774,
+            "size": 54,
+            "httpOnly": false,
+            "secure": false,
+            "session": false,
+            "priority": "Medium",
+            "sourceScheme": "Secure",
+            "sourcePort": 443
+        },
+        {
+            "name": "webId",
+            "value": "f127b7ddc78ce179ccf2ede47c5e1c91",
+            "domain": ".xiaohongshu.com",
+            "path": "/",
+            "expires": 1813310774,
+            "size": 37,
+            "httpOnly": false,
+            "secure": false,
+            "session": false,
+            "priority": "Medium",
+            "sourceScheme": "Secure",
+            "sourcePort": 443
+        },
+        {
+            "name": "acw_tc",
+            "value": "0ad6fbe217817747781617573ec644ae3405925aeba8a541698e8bef90f627",
+            "domain": "edith.xiaohongshu.com",
+            "path": "/",
+            "expires": 1781776575.335277,
+            "size": 68,
+            "httpOnly": true,
+            "secure": false,
+            "session": false,
+            "priority": "Medium",
+            "sourceScheme": "Secure",
+            "sourcePort": 443
+        },
+        {
+            "name": "websectiga",
+            "value": "29098a7cf41f76ee3f8db19051aaa60c0fc7c5e305572fec762da32d457d76ae",
+            "domain": ".xiaohongshu.com",
+            "path": "/",
+            "expires": 1782033975,
+            "size": 74,
+            "httpOnly": false,
+            "secure": false,
+            "session": false,
+            "priority": "Medium",
+            "sourceScheme": "Secure",
+            "sourcePort": 443
+        },
+        {
+            "name": "sec_poison_id",
+            "value": "7610ecf0-173a-4f07-906b-f2877cfab63a",
+            "domain": ".xiaohongshu.com",
+            "path": "/",
+            "expires": 1781775380,
+            "size": 49,
+            "httpOnly": false,
+            "secure": false,
+            "session": false,
+            "priority": "Medium",
+            "sourceScheme": "Secure",
+            "sourcePort": 443
+        },
+        {
+            "name": "loadts",
+            "value": "1781774918671",
+            "domain": ".xiaohongshu.com",
+            "path": "/",
+            "expires": 1813310918,
+            "size": 19,
+            "httpOnly": false,
+            "secure": false,
+            "session": false,
+            "priority": "Medium",
+            "sourceScheme": "Secure",
+            "sourcePort": 443
+        },
+        {
+            "name": "acw_tc",
+            "value": "0a0d0fba17817747800583961e85c947b1542cd75ff9a1500e6040f04f94b8",
+            "domain": "customer.xiaohongshu.com",
+            "path": "/",
+            "expires": 1781776577.302818,
+            "size": 68,
+            "httpOnly": true,
+            "secure": false,
+            "session": false,
+            "priority": "Medium",
+            "sourceScheme": "Secure",
+            "sourcePort": 443
+        },
+        {
+            "name": "gid",
+            "value": "yjdf08fj4iuSyjdf08fWJ7DDJD3iDx2fy4lhiVWV6Juq01281ATqUK88848qYjJ8yi8iYYSK",
+            "domain": ".xiaohongshu.com",
+            "path": "/",
+            "expires": 1816334930.814929,
+            "size": 75,
+            "httpOnly": false,
+            "secure": false,
+            "session": false,
+            "priority": "Medium",
+            "sourceScheme": "Secure",
+            "sourcePort": 443
+        }
+    ],
+    "origins": [
+        {
+            "origin": "https://creator.xiaohongshu.com",
+            "localStorage": [
+                {
+                    "name": "b1b1",
+                    "value": "1"
+                },
+                {
+                    "name": "dsllt",
+                    "value": "1781774918827"
+                },
+                {
+                    "name": "p1",
+                    "value": "4"
+                },
+                {
+                    "name": "last_tiga_update_time",
+                    "value": "1781774775506"
+                },
+                {
+                    "name": "sdt_source_storage_key",
+                    "value": "{\"url\":\"https://fe-static.xhscdn.com/as/v2/fp/643f48183a62c46e6c924b3f0456767a.js\",\"desVersion\":\"2\",\"validate\":false,\"commonPatch\":[\"/fe_api/burdock/v2/note/post\",\"/api/sns/web/v1/comment/post\",\"/api/sns/web/v1/note/like\",\"/api/sns/web/v1/note/collect\",\"/api/sns/web/v1/user/follow\",\"/api/sns/web/v1/feed\",\"/api/sns/web/v1/login/activate\",\"/api/sns/web/v1/note/metrics_report\",\"/api/redcaptcha\",\"/api/store/jpd/main\",\"/phoenix/api/strategy/getAppStrategy\",\"/web_api/sns/v2/note\"],\"signVersion\":\"1\",\"xhsTokenUrl\":\"https://fe-static.xhscdn.com/as/v1/3e44/public/bf7d4e32677698655a5cadc581fd09b3.js\",\"extraInfo\":{\"kbconf\":null,\"fpMatchUrls\":null},\"reportUrl\":\"/api/sec/v1/shield/webprofile\",\"signUrl\":\"https://fe-static.xhscdn.com/as/v1/f218/a15/public/04b29480233f4def5c875875b6bdc3b1.js\"}"
+                },
+                {
+                    "name": "unloads_record",
+                    "value": "[[1781774772553.1,2860]]"
+                },
+                {
+                    "name": "b1",
+                    "value": "I38rHdgsjopgIvesdVwgIC+oIELmBZ5e3VwXLgFTIxS3bqwErFeexd0ekncAzMFYnqthIhJeSBMDKutRI3KsYorWHPtGrbV0P9WfIi/eWc6eYqtyQApPI37ekmR6QL+5Ii6sdneeSfqYHqwl2qt5B0DBIx+PGDi/sVtkIx0sxuwr4qtiIhuaIE3e3LV0I3VTIC7e0utl2ADmsLveDSKsSPw5IEvsiVtJOqw8BuwfPpdeTFWOIx4TIiu6ZPwrPutXIvlaLbgs3qtxIxes1VwHIkumIkIyejgsY/WTge7eSqte/D7sDcpipedeYrDtIC6eDVw2IENsSqtlnlSuNjVtIvoekqt3cZ7sVo4gIESyIhEJ+9DUIvzy4I8OIic7ZPwUIviC4o/sDLds6PwVIC7eSd7s69ImIh6s3zrdQut5IEos3j5exLJsVPwcr9gsSPtxICMPLgoefuw5zn5sWVwrI3S2I3+xoPwwzqwJrUhL8LOsD0OexutmIkJeYa/sx/QBIvOe6e5eWlRrIvNsDqwHIkHiwPwLNVt6I3OeiutdIEAsiqwlIh/eDqtANuwPmVwDIxmxIvQpPdIRJLve3qthIEDaIk0eYuwQZbEqn00sjeHSIEYKPVwQsutaIkJeVPwDKWgskY/e6bEyIEJekd/skqtsnPwqICJeSPwiIh5eVAILIv5eYo/e0PtSICKs6PwV4omqIhHeICgeVLoeTgveYb6e1qwUIvkEIEZ34qwjICz7I35e6b8l8Mge3Vw0I3PA2PwQsn5eTevs1VtiqVtTIkLOIvYdQqtDoqwSIkAsiAgeSuwj2qtIICbEHPt6I3LNr0GxIi/sdFes070ekqwbBqtJIiHJIx0sVutkIhvekn8lIvloHZTNICkFIveeVuwLquteoVt8IxHXIEvsYs5eVPw6gDFRIhLd4ut1HqtjIxWNI3+/I3YZICNeTM6s6olWZPwkIviRpuwjouwWIh0e1MH5IiVRLLgedPtIZPtoNshJPFi7IkRTKPwsIk7s6Y+xIkSQbPwvIiS8wPtWrPtuIEuVICTWIEYuZPwPI3uOIEes1Vw/sck9IhHcIC6sTn6skVwYICRDIEGvnYDgIhluG0FzIh0sVgAeiqw9Iv0sSqtMIvriIE0siuwHIvlPZVwEIEgsdmH2qVteNut6IhKeWqtaIvNsYSkkIEOsWLAsxutRw0AsDPwDspdsVVtrIx0sfsAeiutpIhG6IikIruw/OmE2Ik0ekPw8ZeeefmkhoutmIxMUIkosDeEZIxeefVwLIxZ9IC5sSYVMIh8GIESHwZ48IC3edFHMIEMTIvS9I3NeSdWJyVwnBqw8gbosWWoeYPw5IC5sWb3s3PwbBqwmIxi/pVtDZuwLJutW2qwItuw12d3s6pJexBNs1p0s1Pw2Iip4IELxIvpCIvesTgOe6srhqqwPIkz+BVwm8e/s3qtNIxNsDS/e0/WgIvKsDuw8OmbvIC3sDuw9I3Ke3Vt6+qwHIC3sfdpPKVwLmoAsjLp3Ii6eDuwncutYzB6eTqwFeutmpVtwI3qPIEc="
+                },
+                {
+                    "name": "xhs_context_networkQuality",
+                    "value": "WEAK"
+                }
+            ]
+        }
+    ]
+}

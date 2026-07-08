@@ -1,0 +1,6 @@
+2026/06/20-12:37:08.463 a1f0 Reusing MANIFEST E:\x-tool\wanxia\scripts\.xhs_chrome_profile\Default\Local Storage\leveldb/MANIFEST-000001
+2026/06/20-12:37:08.468 a1f0 Recovering log #19
+2026/06/20-12:37:08.468 a1f0 Reusing old log E:\x-tool\wanxia\scripts\.xhs_chrome_profile\Default\Local Storage\leveldb/000019.log 
+2026/06/20-12:49:08.913 a1f0 Level-0 table #22: started
+2026/06/20-12:49:08.916 a1f0 Level-0 table #22: 33387 bytes OK
+2026/06/20-12:49:08.917 a1f0 Delete type=0 #19

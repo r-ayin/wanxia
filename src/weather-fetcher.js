@@ -1,13 +1,9 @@
 import { getLatitudes, getLongitudes, cities } from './cities.js'
+import { fetchJSON } from './grid-fetcher.js'
+import { fetch7TimerBatch } from './seven-timer-fetcher.js'
 
 const WEATHER_BASE = 'https://api.open-meteo.com/v1/forecast'
 const AQ_BASE = 'https://air-quality-api.open-meteo.com/v1/air-quality'
-
-async function fetchJSON(url) {
-  const res = await fetch(url)
-  if (!res.ok) throw new Error(`API error ${res.status}: ${res.statusText}`)
-  return res.json()
-}
 
 function buildWeatherURL() {
   const params = new URLSearchParams({
@@ -73,27 +69,55 @@ function extractSunsetWindowData(weatherCity, aqCity) {
 }
 
 export async function fetchAllCityData() {
-  const weatherURL = buildWeatherURL()
-  const aqURL = buildAQURL()
+  const today = new Date().toISOString().slice(0, 10)
 
-  const [weatherData, aqData] = await Promise.all([
-    fetchJSON(weatherURL),
-    fetchJSON(aqURL).catch(() => null)
-  ])
+  // ── 主源：open-meteo ──
+  try {
+    const weatherURL = buildWeatherURL()
+    const aqURL = buildAQURL()
 
-  const weatherArray = Array.isArray(weatherData) ? weatherData : [weatherData]
-  const aqArray = aqData ? (Array.isArray(aqData) ? aqData : [aqData]) : []
+    const weatherData = await fetchJSON(weatherURL)
+    await new Promise(r => setTimeout(r, 3000))
+    const aqData = await fetchJSON(aqURL).catch(() => null)
 
-  return cities.map((city, i) => {
-    const w = weatherArray[i]
-    const aq = aqArray[i] || null
+    const weatherArray = Array.isArray(weatherData) ? weatherData : [weatherData]
+    const aqArray = aqData ? (Array.isArray(aqData) ? aqData : [aqData]) : []
+
+    const results = cities.map((city, i) => {
+      const w = weatherArray[i]
+      const aq = aqArray[i] || null
+      if (!w) return null
+      try {
+        return { cityIndex: i, ...extractSunsetWindowData(w, aq) }
+      } catch {
+        return null
+      }
+    })
+
+    const ok = results.filter(Boolean).length
+    if (ok > 0) { results._source = 'open-meteo'; return results }
+  } catch (err) {
+    console.error('[weather] open-meteo 失败:', err.message)
+  }
+
+  // ── 降级：7Timer! ──
+  console.log('[weather] 降级到 7Timer! ...')
+  const timerData = await fetch7TimerBatch(
+    cities.map(c => ({ lat: c.lat, lon: c.lon })),
+    today
+  )
+
+  const results = cities.map((city, i) => {
+    const w = timerData[i]
     if (!w) return null
     try {
-      return { cityIndex: i, ...extractSunsetWindowData(w, aq) }
+      return { cityIndex: i, ...extractSunsetWindowData(w, null) }
     } catch {
       return null
     }
   })
+  results._source = '7timer'
+  return results
 }
 
 export default { fetchAllCityData }

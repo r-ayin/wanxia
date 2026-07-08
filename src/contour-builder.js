@@ -1,16 +1,16 @@
 import { contours } from 'd3-contour'
 
 const TIER_STYLES = [
-  { threshold: 95, tierCn: '极佳', fillColor: '#880e4f', fillOpacity: 0.42 },
-  { threshold: 90, tierCn: '极佳', fillColor: '#c2185b', fillOpacity: 0.40 },
-  { threshold: 85, tierCn: '优秀', fillColor: '#d32f2f', fillOpacity: 0.38 },
-  { threshold: 80, tierCn: '优秀', fillColor: '#e53935', fillOpacity: 0.36 },
-  { threshold: 75, tierCn: '很好', fillColor: '#ef5350', fillOpacity: 0.34 },
-  { threshold: 70, tierCn: '很好', fillColor: '#ff7043', fillOpacity: 0.32 },
-  { threshold: 65, tierCn: '好',   fillColor: '#ff9800', fillOpacity: 0.30 },
-  { threshold: 60, tierCn: '好',   fillColor: '#ffb74d', fillOpacity: 0.26 },
-  { threshold: 55, tierCn: '尚可', fillColor: '#ffe082', fillOpacity: 0.20 },
-  { threshold: 50, tierCn: '尚可', fillColor: '#fff9c4', fillOpacity: 0.12 },
+  { threshold: 95, tierCn: '极佳', fillColor: '#880e4f', fillOpacity: 0.55 },
+  { threshold: 90, tierCn: '极佳', fillColor: '#c2185b', fillOpacity: 0.50 },
+  { threshold: 85, tierCn: '优秀', fillColor: '#d32f2f', fillOpacity: 0.48 },
+  { threshold: 80, tierCn: '优秀', fillColor: '#e53935', fillOpacity: 0.45 },
+  { threshold: 75, tierCn: '很好', fillColor: '#ef5350', fillOpacity: 0.42 },
+  { threshold: 70, tierCn: '很好', fillColor: '#ff7043', fillOpacity: 0.40 },
+  { threshold: 65, tierCn: '好',   fillColor: '#ff9800', fillOpacity: 0.38 },
+  { threshold: 60, tierCn: '好',   fillColor: '#ffb74d', fillOpacity: 0.35 },
+  { threshold: 55, tierCn: '尚可', fillColor: '#ffe082', fillOpacity: 0.30 },
+  { threshold: 50, tierCn: '尚可', fillColor: '#fff9c4', fillOpacity: 0.25 },
 ]
 
 const UPSCALE = 3

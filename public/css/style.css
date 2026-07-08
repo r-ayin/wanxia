@@ -631,9 +631,14 @@ body {
 @media (max-width: 768px) {
   .app-header {
     flex-direction: column;
-    gap: 6px;
-    padding: 8px 12px;
+    gap: 2px;
+    padding: 4px 8px;
   }
+
+  .app-header h1 { font-size: 16px; }
+  .app-header .subtitle { display: none; }
+  .header-controls { gap: 4px; }
+  .header-controls button { font-size: 11px; padding: 2px 6px; }
 
   .header-right {
     width: 100%;
@@ -645,9 +650,10 @@ body {
   }
 
   .legend-bar {
-    gap: 8px;
-    padding: 4px 12px;
+    gap: 4px;
+    padding: 2px 8px;
     overflow-x: auto;
+    font-size: 11px;
   }
 
   .legend-gradient {
@@ -656,7 +662,7 @@ body {
 
   .detail-panel {
     width: 100%;
-    height: 55vh;
+    height: 50vh;
     top: auto;
     bottom: 0;
     transform: translateY(100%);

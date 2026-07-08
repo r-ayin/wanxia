@@ -19,6 +19,9 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
+if sys.platform == "win32":
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+
 ROOT = Path(__file__).resolve().parent.parent
 STORAGE_STATE = ROOT / "scripts" / ".xhs_storage_state.json"
 ENV_FILE = ROOT / ".env"
@@ -78,12 +81,19 @@ def save_health(ok: bool, details: dict) -> None:
 
 
 async def check() -> dict:
-    """检查小红书 cookie 是否有效"""
+    """检查小红书 cookie 是否有效（使用副本防止覆写）"""
     from browser_use import Browser
+    import shutil as _shutil
+
+    BAK = STORAGE_STATE.with_suffix(".json.bak")
+    # 优先用 .bak（只读源），否则用原件
+    src = BAK if BAK.exists() else STORAGE_STATE
+    tmp = STORAGE_STATE.with_suffix(".tmp_keepalive.json")
+    _shutil.copy(src, tmp)
 
     browser = Browser(
         headless=True,
-        storage_state=str(STORAGE_STATE) if STORAGE_STATE.exists() else None,
+        storage_state=str(tmp),
         window_size={"width": 1440, "height": 900},
         keep_alive=False,
     )
@@ -91,7 +101,7 @@ async def check() -> dict:
     try:
         await browser.start()
         page = await browser.get_current_page()
-        await page.goto("https://creator.xiaohongshu.com", wait_until="domcontentloaded", timeout=30000)
+        await page.goto("https://creator.xiaohongshu.com")
         await asyncio.sleep(3)
 
         url = page.url
@@ -99,11 +109,16 @@ async def check() -> dict:
 
         is_logged_in = "/login" not in url.lower() and "登录" not in title
 
-        # Export fresh cookies (they get refreshed by the visit)
+        # 导出刷新后的 cookie（写入 tmp，然后同步回 STORAGE_STATE 和 .bak）
         if is_logged_in:
-            await browser.export_storage_state(str(STORAGE_STATE))
+            await browser.export_storage_state(str(tmp))
+            _shutil.copy(tmp, STORAGE_STATE)
+            _shutil.copy(tmp, BAK) if BAK.exists() else None
+            import os as _os
+            if BAK.exists():
+                try: _os.chmod(str(BAK), 0o444)
+                except: pass
 
-            # Also update .env cookie string
             cookies = await page.context.cookies()
             cookie_str = "; ".join([f"{c['name']}={c['value']}" for c in cookies if c.get("name")])
             update_env_cookie(cookie_str)
@@ -122,6 +137,8 @@ async def check() -> dict:
         except Exception:
             pass
         return {"logged_in": False, "error": str(e)}
+    finally:
+        tmp.unlink(missing_ok=True)
 
 
 async def main():

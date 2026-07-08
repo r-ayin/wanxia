@@ -15,7 +15,9 @@ def check():
 
 def ensure_deployed():
     """Ensure a Linux-native copy exists with proper native modules."""
-    if not os.path.isdir(WORK_DIR):
+    if not os.path.isdir(WORK_DIR) or not os.path.isfile(os.path.join(WORK_DIR, "server.js")):
+        if os.path.isdir(WORK_DIR):
+            shutil.rmtree(WORK_DIR)
         print(json.dumps({"info": "deploying to /tmp/wanxia", "port": PORT}))
         shutil.copytree(SRC_DIR, WORK_DIR, symlinks=True, ignore_dangling_symlinks=True)
         r = subprocess.run(["npm", "install"], cwd=WORK_DIR, capture_output=True, text=True, timeout=120)

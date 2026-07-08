@@ -3,6 +3,7 @@ import { computeSunsetScore, getWeights, setWeights } from './prediction-engine.
 import {
   storeActualWeather, getCalibrationPairs, saveWeightRecord, getLatestWeights,
 } from './storage.js'
+import { fetchJSON } from './grid-fetcher.js'
 
 const WEIGHT_BOUNDS = {
   highCloud: [0.15, 0.45],
@@ -15,12 +16,6 @@ const WEIGHT_BOUNDS = {
 
 const MIN_CALIBRATION_DAYS = 7
 const EMA_ALPHA = 0.15
-
-async function fetchJSON(url) {
-  const res = await fetch(url)
-  if (!res.ok) throw new Error(`API ${res.status}`)
-  return res.json()
-}
 
 export async function fetchActualWeather(date) {
   const lats = getLatitudes()
