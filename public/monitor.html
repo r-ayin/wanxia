@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>wanxia Monitor</title>
+<style>
+  body { font-family: system-ui, -apple-system, sans-serif; background: #0f172a; color: #e2e8f0; margin: 0; padding: 24px; }
+  h1 { font-size: 1.5rem; margin: 0 0 4px; }
+  .sub { color: #94a3b8; font-size: .8rem; margin: 0 0 24px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
+  .card { background: #1e293b; border-radius: 10px; padding: 16px; border: 1px solid #334155; }
+  .card h2 { font-size: 1rem; margin: 0 0 12px; color: #38bdf8; }
+  .kpi { font-size: 2rem; font-weight: 700; color: #f8fafc; }
+  .kpi-label { font-size: .75rem; color: #94a3b8; }
+  table { width: 100%; border-collapse: collapse; font-size: .8rem; }
+  th, td { padding: 4px 8px; text-align: left; border-bottom: 1px solid #334155; }
+  th { color: #94a3b8; font-weight: 500; }
+  .bar { display: inline-block; background: linear-gradient(90deg, #f59e0b, #ef4444); height: 16px; border-radius: 3px; min-width: 2px; color: transparent; font-size: 0; }
+  .ok { color: #22c55e; }
+  .err { color: #ef4444; }
+  .warn { color: #f59e0b; }
+  .footer { margin-top: 24px; font-size: .7rem; color: #475569; }
+</style>
+</head>
+<body>
+<h1>🌅 wanxia Monitoring Dashboard</h1>
+<p class="sub">Generated: 2026-07-08T09:39:28.038Z | Node v24.13.0</p>
+
+<div class="grid">
+  <div class="card">
+    <h2>📊 Posts</h2>
+    <div class="kpi">34</div>
+    <div class="kpi-label">total posts over 6 days</div>
+  </div>
+  <div class="card">
+    <h2>🗄️ Database</h2>
+    <div class="kpi">0</div>
+    <div class="kpi-label">predictions</div>
+  </div>
+  <div class="card">
+    <h2>💚 Health</h2>
+    <table><tr><td>db</td><td class="ok">OK</td></tr><tr><td>posts</td><td class="ok">OK</td></tr><tr><td>server</td><td class="">unknown</td></tr><tr><td>node</td><td class="">v24.13.0</td></tr></table>
+  </div>
+</div>
+
+<div class="grid" style="margin-top:16px">
+  <div class="card" style="grid-column:1/-1">
+    <h2>📅 Recent Post Activity (14 days)</h2>
+    <table>
+      <tr><th>Date</th><th>Posts</th><th>Volume</th></tr>
+      <tr><td>2026-06-18</td><td>4</td><td><span class="bar" style="width:50%">██████████</span></td></tr><tr><td>2026-06-19</td><td>5</td><td><span class="bar" style="width:63%">█████████████</span></td></tr><tr><td>2026-06-20</td><td>8</td><td><span class="bar" style="width:100%">████████████████████</span></td></tr><tr><td>2026-06-21</td><td>6</td><td><span class="bar" style="width:75%">███████████████</span></td></tr><tr><td>2026-06-22</td><td>6</td><td><span class="bar" style="width:75%">███████████████</span></td></tr><tr><td>2026-06-29</td><td>5</td><td><span class="bar" style="width:63%">█████████████</span></td></tr>
+    </table>
+  </div>
+</div>
+
+<div class="footer">wanxia monitor v1.0 · auto-refreshes on reload</div>
+</body>
+</html>
