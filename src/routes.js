@@ -230,6 +230,17 @@ router.get('/health', (req, res) => {
   })
 })
 
+// ── v3.1 监控仪表盘 ────────────────────────────────────────────
+router.get('/monitor', async (_req, res) => {
+  try {
+    const { generateDashboard } = await import('./monitor-dashboard.js')
+    res.setHeader('Content-Type', 'text/html; charset=utf-8')
+    res.send(generateDashboard())
+  } catch (err) {
+    res.status(500).json({ error: 'dashboard generation failed', detail: err.message })
+  }
+})
+
 // ── 社媒校准（不变） ──────────────────────────────────────────────
 
 router.get('/social/status', (req, res) => {

@@ -74,7 +74,7 @@ function systemHealth() {
 
 // ── HTML generator ───────────────────────────────────────────────
 
-function generateDashboard() {
+export function generateDashboard() {
   const db = dbStats()
   const posts = postsStats()
   const health = systemHealth()
