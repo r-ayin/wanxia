@@ -9,6 +9,7 @@ import { fetchAndStoreSocialData, hasCookie, hasXiaohongshuCookie, cookieStatus,
 import { runSocialCalibration, generateInvestigationReport } from './social-calibration.js'
 import { getWeights } from './prediction-engine.js'
 import { cities } from './cities.js'
+import { checkCacheHealth, checkApiHealth } from './data-health.js'
 
 const router = Router()
 
@@ -223,7 +224,9 @@ router.get('/health', (req, res) => {
     },
     cityCount: cities.length,
     currentWeights: getWeights(),
-    dataSource: 'prefetch-cache', // 标记数据来源，便于排查
+    dataSource: 'prefetch-cache',
+    cacheHealth: checkCacheHealth(),
+    apiHealth: checkApiHealth(),
   })
 })
 

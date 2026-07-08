@@ -1,6 +1,7 @@
 import { getLatitudes, getLongitudes, cities } from './cities.js'
 import { fetchJSON } from './grid-fetcher.js'
 import { fetch7TimerBatch } from './seven-timer-fetcher.js'
+import { recordApiResult } from './data-health.js'
 
 const WEATHER_BASE = 'https://api.open-meteo.com/v1/forecast'
 const AQ_BASE = 'https://air-quality-api.open-meteo.com/v1/air-quality'
@@ -70,6 +71,7 @@ function extractSunsetWindowData(weatherCity, aqCity) {
 
 export async function fetchAllCityData() {
   const today = new Date().toISOString().slice(0, 10)
+  const t0 = Date.now()
 
   // ── 主源：open-meteo ──
   try {
@@ -95,9 +97,12 @@ export async function fetchAllCityData() {
     })
 
     const ok = results.filter(Boolean).length
-    if (ok > 0) { results._source = 'open-meteo'; return results }
+    const elapsed = Date.now() - t0
+    if (ok > 0) { results._source = 'open-meteo'; recordApiResult('open-meteo', true, elapsed); return results }
+    recordApiResult('open-meteo', false, elapsed, `0/${cities.length} cities parsed`)
   } catch (err) {
     console.error('[weather] open-meteo 失败:', err.message)
+    recordApiResult('open-meteo', false, Date.now() - t0, err.message)
   }
 
   // ── 降级：7Timer! ──
