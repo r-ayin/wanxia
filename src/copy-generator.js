@@ -51,6 +51,19 @@ const SPOTS = {
   银川:    { best: ['览山公园', '贺兰山', '阅海'],         quick: ['中山公园', '宝湖'] },
   海口:    { best: ['万绿园', '假日海滩', '世纪大桥'],     quick: ['白沙门', '金牛岭'] },
   三亚:    { best: ['椰梦长廊', '鹿回头', '凤凰岭'],       quick: ['大东海', '三亚湾'] },
+  // 🔴 v3.1 新增
+  宁波:    { best: ['老外滩', '东钱湖', '月湖'],           quick: ['三江口', '鄞州公园'] },
+  无锡:    { best: ['太湖鼋头渚', '蠡湖', '惠山'],         quick: ['长广溪', '金城湾'] },
+  常州:    { best: ['滆湖', '西太湖', '天宁宝塔'],         quick: ['红梅公园', '青枫公园'] },
+  佛山:    { best: ['千灯湖', '东平河', '西樵山'],         quick: ['亚洲艺术公园', '文华公园'] },
+  东莞:    { best: ['松山湖', '同沙水库', '旗峰山'],       quick: ['中心广场', '水濂山'] },
+  珠海:    { best: ['情侣路', '野狸岛', '横琴'],           quick: ['海滨公园', '板樟山'] },
+  太原:    { best: ['汾河公园', '晋阳湖', '双塔寺'],       quick: ['迎泽公园', '长风商务区'] },
+  石家庄:  { best: ['滹沱河', '世纪公园', '龙泉湖'],       quick: ['长安公园', '水上公园'] },
+  长春:    { best: ['净月潭', '南湖公园', '伊通河'],       quick: ['长春公园', '文化广场'] },
+  洛阳:    { best: ['龙门石窟', '洛河', '应天门'],         quick: ['洛浦公园', '隋唐遗址'] },
+  桂林:    { best: ['漓江', '两江四湖', '象鼻山'],         quick: ['七星公园', '榕湖'] },
+  大理:    { best: ['洱海环海路', '苍山', '双廊'],         quick: ['大理古城', '龙龛码头'] },
 }
 
 function getSpots(cityName, score) {
@@ -69,6 +82,58 @@ function getSeason() {
   if (m >= 9 && m <= 10) return 'autumn'
   if (m >= 12 || m <= 2) return 'winter'
   return 'spring'
+}
+
+// ── 🔴 v3.1 节气 + 节假日感知 ─────────────────────────────────────────────────────
+const SOLAR_TERMS = {
+  '0105': '小寒', '0120': '大寒', '0204': '立春', '0219': '雨水',
+  '0305': '惊蛰', '0320': '春分', '0404': '清明', '0419': '谷雨',
+  '0505': '立夏', '0520': '小满', '0605': '芒种', '0621': '夏至',
+  '0706': '小暑', '0722': '大暑', '0807': '立秋', '0822': '处暑',
+  '0907': '白露', '0922': '秋分', '1008': '寒露', '1023': '霜降',
+  '1107': '立冬', '1122': '小雪', '1207': '大雪', '1222': '冬至',
+}
+const HOLIDAYS = [
+  { match: d => d.getMonth()+1===1&&d.getDate()===1, name: '元旦', vibe: '新年第一场晚霞，开个好头', tag: '#元旦晚霞' },
+  { match: d => d.getMonth()+1===5&&d.getDate()<=3, name: '五一', vibe: '假期配晚霞，不用上班的日子真好看', tag: '#五一假期' },
+  { match: d => d.getMonth()+1===6&&d.getDate()===1, name: '儿童节', vibe: '不管几岁，看晚霞都是最开心的事', tag: '#六一' },
+  { match: d => d.getMonth()+1===10&&d.getDate()<=7, name: '国庆', vibe: '黄金周配火烧云', tag: '#国庆出游' },
+  { match: d => d.getMonth()+1===2&&d.getDate()===14, name: '情人节', vibe: '陪TA看场晚霞，比什么礼物都浪漫', tag: '#情人节晚霞' },
+  { match: d => d.getMonth()+1===7&&d.getDate()===7, name: '七夕', vibe: '七夕晚上的霞光，比任何烟花都好看', tag: '#七夕晚霞' },
+]
+
+function getDateContext() {
+  const now = new Date()
+  const mmdd = `${String(now.getMonth()+1).padStart(2,'0')}${String(now.getDate()).padStart(2,'0')}`
+  const term = SOLAR_TERMS[mmdd]
+  const holiday = HOLIDAYS.find(h => h.match(now))
+  const contexts = []
+  if (term) contexts.push({ hook: `今日${term}，适合看一场好晚霞`, vibe: `${term}时节的天空，颜色总是特别通透`, tag: `#${term}` })
+  if (holiday) contexts.push(holiday)
+  if (!contexts.length) {
+    const wk = now.getDay()
+    if (wk === 5) contexts.push({ hook: '周五了，下班去看晚霞吧', vibe: '周末前的晚霞最有仪式感', tag: '#周五晚霞' })
+    else if (wk === 6 || wk === 0) contexts.push({ hook: '周末不赶时间，去看场晚霞吧', vibe: '周末的节奏，适合慢慢等一场日落', tag: '#周末晚霞' })
+  }
+  return contexts
+}
+
+// ── 🔴 v3.1 互动钩子轮换库（防重复）─────────────────────────────────────────────
+const ENGAGEMENT_HOOKS = [
+  '你那儿今天好看吗？拍到了发评论 📸',
+  '你在哪个城市？看到的天空是什么颜色的？',
+  '今天拍到晚霞的举手 🙋  发评论看看你拍的',
+  '你们今天那儿能看到吗？评论区报个到',
+  '今天的晚霞你打几分？评论区说说',
+  '分享一下你拍的晚霞 🌇  好想看看不同城市的天空',
+  '你今年看过最好看的一场晚霞是什么时候？',
+  '有没有人跟我一样觉得今天的晚霞特别好看？',
+  '下班路上拍到晚霞了吗？发来看看',
+  '今晚的云烧起来了吗？你那儿呢',
+]
+let _hookIdx = 0
+function rotatingHook() {
+  return ENGAGEMENT_HOOKS[_hookIdx++ % ENGAGEMENT_HOOKS.length]
 }
 
 function seasonMood(season) {
@@ -319,52 +384,6 @@ function scoreComment(score) {
   if (score >= 65) return '看运气，可以一试'
   if (score >= 50) return '随缘出门'
   return '不建议特意出门'
-}
-
-// ── 日期上下文（节日/节气/事件） ──────────────────────────────────────────────
-function getDateContext() {
-  const now = new Date()
-  const m = now.getMonth() + 1
-  const d = now.getDate()
-  const weekday = now.getDay()  // 0=周日
-
-  const contexts = []
-
-  // 夏至附近（6月20-22）
-  if (m === 6 && d >= 20 && d <= 22) {
-    const solstice = d === 21 ? '今天' : d === 20 ? '明天' : '昨天'
-    contexts.push({
-      hook: `${solstice}夏至，全年白天最长的一天`,
-      vibe: '夏至的晚霞总感觉特别漫长，太阳迟迟不肯落下去',
-      tag: '#夏至晚霞',
-    })
-  }
-
-  // 端午附近（2026年端午是6月19日）
-  if (m === 6 && d >= 18 && d <= 21) {
-    contexts.push({
-      hook: '端午假期刚过，夏天的仪式感还在',
-      vibe: '粽叶飘香的傍晚，天空也在偷偷过节',
-      tag: '#端午晚霞',
-    })
-  }
-
-  // 周末
-  if (weekday === 5) contexts.push({ hook: '周五晚上，给周末一个浪漫开场', vibe: '周末前的晚霞总是特别好看' })
-  if (weekday === 6) contexts.push({ hook: '周六的傍晚值得认真对待', vibe: '周末午后到傍晚，最适合追一场晚霞' })
-  if (weekday === 0) contexts.push({ hook: '周日傍晚，用晚霞给周末收尾', vibe: '把周末最后的光留住的仪式感' })
-
-  // 暑假
-  if (m >= 6 && m <= 8) {
-    contexts.push({ hook: '暑假模式，追霞不用赶时间', vibe: '学生党放假了，朋友圈晚霞大赛开始' })
-  }
-
-  // 年中
-  if (m === 6 && d >= 15 && d <= 25) {
-    contexts.push({ hook: '2026年过半，天空送你的半年礼物', vibe: '站在年中的节点上，晚霞像是对上半年的总结' })
-  }
-
-  return contexts.length ? contexts : [{ hook: '', vibe: '', tag: '' }]
 }
 
 // ── 诗意天气叙事 ──────────────────────────────────────────────────────────
@@ -700,6 +719,18 @@ export const TIER1_CITY_IDS = [
 
 // 🔴 v3.1: 核心城市 — 每天必发，无晚霞时播报预测
 export const CORE_CITY_IDS = ['hangzhou', 'guangzhou', 'xiamen', 'beijing', 'shanghai']
+
+// ── 🔴 v3.1 短文案模式（≤100字，适合快速发帖 + 故事功能）──────────────────────────
+export function generateShortCopy(city, color, score, seed = 0) {
+  const tier = score >= 80 ? '高概率好晚霞' : score >= 65 ? '有机会' : '随缘看'
+  const poetic = poeticSnippet(score, color.name, seed)
+  const ctx = getDateContext()
+  const dateCtx = ctx[0] || {}
+  return {
+    title: `${scoreEmoji(score)} ${city.name} ${score}分·${tier}`,
+    body: `${poetic} ${dateCtx.hook || ''} 日落约${city.sunset || '--'}。${rotatingHook()}`,
+  }
+}
 
 // ── 无晚霞时的预测文案 ──────────────────────────────────────────────────────────
 function forecastCopy(city, recentDays, season) {
