@@ -1,17 +1,18 @@
 # wanxia — 进度追踪
 
-> 最后更新：2026-06-20 CST | 🔴 自动发帖停用 | 深度研究完成 | 待 CDP 模式迁移
+> 最后更新：2026-07-18 CST | 🔴 自动发帖仍停用 | CDP 模式已落地 | 待 E2E 验证
 
 ## 状态
 <!-- STATUS: blocked -->
 <!-- BLOCKED_SINCE: 2026-06-20 -->
-<!-- BLOCK_REASON: 小红书检测到自动化脚本——v11 addInitScript Shadow DOM + launch模式 + 固定延迟 被多层检测命中 -->
+<!-- BLOCK_REASON: 小红书检测到自动化脚本——v11 addInitScript Shadow DOM + launch模式 + 固定延迟 被多层检测命中；CDP 模式已实施，待反检测效果验证 -->
 
 ## 当前任务
-<!-- TASK: 中期——CDP 模式迁移（connect_over_cdp 替代 launch） -->
-<!-- TASK_STATUS: pending -->
-<!-- NEXT: 短期手动发帖SOP → 中期CDP迁移 → 长期移动端自动化 -->
+<!-- TASK: CDP 模式 E2E 验证 + 行为拟态调优 -->
+<!-- TASK_STATUS: in_progress -->
+<!-- NEXT: 验证 CDP 反检测效果 → 行为拟态（随机延迟/鼠标轨迹） → 恢复小流量自动发帖 -->
 <!-- RESEARCH: ✅ 深度研究完成 → docs/anti-detection-research.md -->
+<!-- RESEARCH: ✅ CDP 方案已落地 → scripts/xhs_cdp_poster.py / xhs_persistent_poster.py -->
 
 ## v2.0 图文优化（2026-06-18）
 - [x] 文案引擎 v2.0: 扩颜色变体(7→10 hex, 每色5-6表达 + 季节轮换)
@@ -56,6 +57,35 @@
 - [x] **封面稳健性**: 失败自动重试 + 批次失败汇总
 - [x] **E2E 验证**: 7/7 全部发帖成功（广州/重庆/天津/厦门/杭州/北京/上海）
 
+## v3.4 手动发帖 SOP（2026-06-29）
+- [x] 素材包 → 小红书发布完整流程文档：`docs/manual-posting-sop.md`
+- [x] 修正 SOP：服务必须启动、素材包不会自动生成
+- [x] 精简 SOP：两步走，去掉冗余章节
+
+## v3.5 CDP 反检测发帖引擎（2026-07-08）
+- [x] **CDP 模式迁移**: `scripts/xhs_cdp_poster.py` 改用 `connect_over_cdp()` 连接真实 Chrome
+- [x] **持久化 poster**: `scripts/xhs_persistent_poster.py` — 复用同一 Chrome 实例 + 用户态 profile
+- [x] **登录态 auth 工具**: `scripts/xhs_auth_setup.py` — 扫码/登录态初始化
+- [x] **绕过反检测**: 避免裸 `launch()` + 固定指纹，走真实浏览器 CDP 通道
+- [x] **Bugfix**: `copyFile` 内容读取兜底（inline content 缺失时）
+
+## v3.6 文案引擎 v3.1（2026-07-08）
+- [x] 节气 + 节假日感知（夏至/端午/暑假/年中等）
+- [x] 短文案 + 互动轮换，降低模板化痕迹
+- [x] 12 城扩展（在原有核心城市基础上增加覆盖）
+- [x] 天气 insight 奖励 + `quickLine` 多城摘要
+
+## v3.7 数据健康监控看板 v1.0（2026-07-08）
+- [x] 监控看板前端：`public/monitor.html` + `src/monitor-dashboard.js`
+- [x] 管线健康监测 + API 调用追踪：`src/data-health.js`
+- [x] `/api/monitor` 路由接入，暴露监控数据
+- [x] `generateDashboard` 导出修复，供路由消费
+
+## v3.8 邮件推送（未提交，2026-07-18）
+- [x] 每日 posts 邮件推送脚本：`scripts/mail_push.py`（读 posts.json + 封面图附件）
+- [x] Windows 本地 cron 脚本：`scripts/cron/wanxia-mail-push.sh`（12:20 运行，3 次重试）
+- [ ] **待提交**: `mail_push.py` / `wanxia-mail-push.sh` / `logs/` 尚未进入 git
+
 ## 变更历史
 
 
@@ -63,6 +93,11 @@
 
 | 时间 | 变更类型 | 描述 | Agent/人 |
 |------|---------|------|----------|
+| 2026-07-30 | 新增 | 新增（8 文件） — GATES/PROGRESS/sunset/sunset/sunset/+3 | Claude (auto) |
+| 2026-07-08 | 功能 | 数据健康监控看板 v1.0 + `/api/monitor` 路由 (7e61345, 73bb827, 9209bf9) | Claude |
+| 2026-07-08 | 功能 | 文案引擎 v3.1：节气/节假日/短文案/互动轮换/12城扩展 (d0a3a28, db169ad) | Claude |
+| 2026-07-08 | 功能 | CDP 反检测发帖引擎：connect_over_cdp + 持久 poster + auth 设置 (c6a8792, fb4dc22) | Claude |
+| 2026-06-29 | 文档 | 手动发帖 SOP 迭代：完整流程 → 修正 → 精简两步走 (9362863, 36cc82b, bab8649) | Claude |
 | 2026-06-19 | 重构 | 路由重构 + grid/weather fetcher 优化 + recorded_publish 清理 (edc38a0) | Claude |
 | 2026-06-19 | 重构 | v3.5 封面 prompt 统一为你调的风格 (c7ddc65) | Claude |
 | 2026-06-19 | 文档 | 项目看板更新 — 微信推送闭环 + iLink 发现 (a3865e6) | Claude |
@@ -107,11 +142,14 @@
 - [x] 🔴 **自动发帖已禁用** — server.js cron 已关闭（2026-06-20）
 - [x] 🔴 **反检测深度研究** — 小红书 5 层风控体系完整调研 → `docs/anti-detection-research.md`
 - [x] 🔴 **短期**：手动发帖 SOP — `docs/manual-posting-sop.md`（素材包→用户手动上传，含完整步骤+异常处理+验证清单）
-- [ ] 🟡 **中期**：CDP 模式迁移 — `xhs_post_v11.py` 改为 `connect_over_cdp()` 连接真实 Chrome
+- [x] 🟡 **中期**：CDP 模式迁移 — `scripts/xhs_cdp_poster.py` + `scripts/xhs_persistent_poster.py` 已落地（2026-07-08）
+- [ ] 🟡 **中期**：CDP 反检测 E2E 验证 — 小流量回测确认通过率与账号安全
 - [ ] 🟡 **中期**：行为拟态 — 随机延迟、贝塞尔鼠标轨迹、发帖时间随机化
+- [x] 🟢 每日邮件推送 — `scripts/mail_push.py` + `scripts/cron/wanxia-mail-push.sh` 已开发（未提交 git）
 - [ ] 🟢 **长期**：移动端自动化 — Android 真机 + Appium（设备指纹完全真实）
 - [ ] Weibo 桌面搜索 cookie 配置（提升微博数据质量）
 - [ ] 微博/小红书权重比例校准
+- [ ] 未提交改动归档：`data/sunset.db-shm` / `data/sunset.db-wal` 运行时 WAL 文件，无需提交
 
 ## 新建工具链
 
@@ -123,7 +161,14 @@
 | `scripts/export-xhs-cookie.js` | Playwright Cookie 导出（已登录 → storage_state） |
 | `scripts/xhs_keepalive.py` | Cookie 保活心跳（每 4h 刷新 session） |
 | `scripts/generate-cover-image.py` | 🆕 GPT-Image-2 AI 封面图生成器（1024×1536, 摄影级晚霞） |
+| `scripts/xhs_cdp_poster.py` | CDP 模式发帖：connect_over_cdp 连接真实 Chrome |
+| `scripts/xhs_persistent_poster.py` | 持久化 poster：复用 Chrome 实例 + profile |
+| `scripts/xhs_auth_setup.py` | 小红书登录态/扫码初始化工具 |
+| `scripts/mail_push.py` | 每日 posts 邮件推送（读 posts.json + AI 封面图附件） |
+| `scripts/cron/wanxia-mail-push.sh` | Windows 本地 12:20 cron 邮件推送脚本（3 次重试） |
 | `src/copy-generator.js` | 文案引擎：全国播报 + 一线城市独立帖（风格B） |
+| `src/data-health.js` | 数据管线健康检查与 API 追踪 |
+| `src/monitor-dashboard.js` | 监控看板数据生成与渲染 |
 
 ### 素材包输出 (`posts/`)
 ```
@@ -142,4 +187,4 @@ posts/
 
 | 阻塞 | 影响范围 | 状态 |
 |------|---------|------|
-| 🔴 **小红书检测自动化脚本** | 自动发帖全部停用，转为手动 | 调研中 |
+| 🔴 **小红书反检测效果待验证** | 自动发帖仍停用；CDP + 持久 poster 已落地，需小流量 E2E 验证通过率与账号安全 | 待验证（2026-07-18） |
