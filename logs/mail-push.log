@@ -76,3 +76,7 @@
 \u274c �ʼ�����ʧ��: UnicodeEncodeError: 'gbk' codec can't encode character '\u2705' in position 0: illegal multibyte sequence
   ⏳ SMTP 尝试 3 失败，90s 后重试...
   ⚠️ 2026-07-26T12:21:39+08:00 wanxia 邮件推送失败（3 次重试后仍失败，见上行）
+  [mail] ⚠️ 无封面图（covers/ 不存在或为空）
+  [mail] 连接 smtp.qq.com:465...
+✅ 晚霞预报已发: 960372061@qq.com,2318061765@qq.com
+  ✅ 2026-07-30T12:20:04+08:00 wanxia 邮件已发到 960372061@qq.com,2318061765@qq.com
