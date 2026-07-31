@@ -93,6 +93,7 @@
 
 | 时间 | 变更类型 | 描述 | Agent/人 |
 |------|---------|------|----------|
+| 2026-07-31 | 配置 | 配置（2 文件） — sunset/sunset | Claude (auto) |
 | 2026-07-31 | 配置 | 配置（1 文件） — mail-push | Claude (auto) |
 | 2026-07-30 | 配置 | 配置（3 文件） — sunset/sunset/mail-push | Claude (auto) |
 | 2026-07-30 | 新增 | 新增（8 文件） — GATES/PROGRESS/sunset/sunset/sunset/+3 | Claude (auto) |
