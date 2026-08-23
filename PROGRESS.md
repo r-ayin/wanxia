@@ -93,6 +93,7 @@
 
 | 时间 | 变更类型 | 描述 | Agent/人 |
 |------|---------|------|----------|
+| 2026-08-23 | 配置 | 配置（4 文件） — sunset/sunset/sunset/mail-push | Claude (auto) |
 | 2026-08-03 | 配置 | 配置（3 文件） — sunset/sunset/mail-push | Claude (auto) |
 | 2026-07-31 | 配置 | 配置（2 文件） — sunset/sunset | Claude (auto) |
 | 2026-07-31 | 配置 | 配置（1 文件） — mail-push | Claude (auto) |
